@@ -1,0 +1,312 @@
+{'bucket': 'xifer-pywren-118', 'bucket_output': 'output-bucky', 'region': 'eu-central-1'}
+execute0 <<<<<<<
+C:\Users\xifer\LightWeightServerlessBigData\playground\pywrenMapTest.py
+execute1 <<<<<<<<
+[1, 4, 5, 6]
+<function numpy_test at 0x000001A7B10BBD90>
+execute1.1 <<<<<<<<
+def numpy_test(x):
+    return numpy.arange(x**2, dtype=numpy.float64).reshape(x, x)
+
+execute1.2 <<<<<<<<
+numpy_test
+execute1.2 <<<<<<<<
+execute1 <<<<<<<<
+execute2 <<<<<<<<
+[1, 4, 5, 6]
+execute2 <<<<<<<<
+Module  denpen <<<<<<<<<<<<<<<<<<<<<<<<<<<
+<pywren.serialize.module_dependency.ModuleDependencyAnalyzer object at 0x000001A7B1618F28>
+['BaseHTTPServer', 'Bastion', 'CDROM', 'CGIHTTPServer', 'Canvas', 'ConfigParser', 'Cookie', 'DLFCN', 'Dialog', 'DocXMLRPCServer', 'FileDialog', 'FixTk', 'HTMLParser', 'IN', 'MimeWriter', 'Queue', 'ScrolledText', 'SimpleDialog', 'SimpleHTTPServer', 'SimpleXMLRPCServer', 'SocketServer', 'StringIO', 'TYPES', 'Tix', 'Tkconstants', 'Tkdnd', 'Tkinter', 'UserDict', 'UserList', 'UserString', '_LWPCookieJar', '_MozillaCookieJar', '__future__', '_abcoll', '_bsddb', '_codecs_cn', '_codecs_hk', '_codecs_iso2022', '_codecs_jp', '_codecs_kr', '_codecs_tw', '_csv', '_ctypes', '_ctypes_test', '_curses', '_curses_panel', '_elementtree', '_heapq', '_hotshot', '_io', '_json', '_lsprof', '_multibytecodec', '_multiprocessing', '_pyio', '_sqlite3', '_strptime', '_testcapi', '_threading_local', '_weakrefset', 'abc', 'aifc', 'antigravity', 'anydbm', 'argparse', 'ast', 'asynchat', 'asyncore', 'atexit', 'audiodev', 'audioop', 'base64', 'bdb', 'binhex', 'bisect', 'bs4', 'bsddb', 'bz2', 'cProfile', 'calendar', 'certifi', 'cgi', 'cgitb', 'chunk', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'commands', 'compileall', 'compiler', 'contextlib', 'cookielib', 'copy', 'copy_reg', 'crypt', 'csv', 'ctypes', 'curses', 'datetime', 'dbhash', 'dbm', 'debconf', 'decimal', 'difflib', 'dircache', 'dis', 'distutils', 'doctest', 'dumbdbm', 'dummy_thread', 'dummy_threading', 'email', 'encodings', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fpformat', 'fractions', 'ftplib', 'functools', 'future_builtins', 'genericpath', 'getopt', 'getpass', 'gettext', 'glob', 'gzip', 'hashlib', 'heapq', 'hmac', 'hotshot', 'htmlentitydefs', 'htmllib', 'httplib', 'ihooks', 'imaplib', 'imghdr', 'importlib', 'imputil', 'inspect', 'io', 'json', 'keyword', 'lib2to3', 'linecache', 'linuxaudiodev', 'locale', 'logging', 'lsb_release', 'macpath', 'macurl2path', 'mailbox', 'mailcap', 'markupbase', 'md5', 'mhlib', 'mimetools', 'mimetypes', 'mimify', 'mmap', 'modulefinder', 'multifile', 'multiprocessing', 'multyvac', 'multyvacinit', 'mutex', 'netrc', 'new', 'nis', 'nntplib', 'ntpath', 'nturl2path', 'numbers', 'opcode', 'optparse', 'os', 'os2emxpath', 'ossaudiodev', 'parser', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'popen2', 'poplib', 'posixfile', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'py_compile', 'pyclbr', 'pydoc', 'pydoc_data', 'pyexpat', 'quopri', 'random', 're', 'readline', 'repr', 'resource', 'requests', 'rexec', 'rfc822', 'rlcompleter', 'robotparser', 'runpy', 'sched', 'sets', 'sgmllib', 'sha', 'shelve', 'shlex', 'shutil', 'site', 'sitecustomize', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statvfs', 'string', 'stringold', 'stringprep', 'struct', 'subprocess', 'sunau', 'sunaudio', 'symbol', 'symtable', 'sysconfig', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'this', 'threading', 'timeit', 'tkColorChooser', 'tkCommonDialog', 'tkFileDialog', 'tkFont', 'tkMessageBox', 'tkSimpleDialog', 'toaiff', 'token', 'tokenize', 'trace', 'traceback', 'ttk', 'tty', 'turtle', 'types', 'unittest', 'urllib', 'urllib2', 'urlparse', 'user', 'uu', 'uuid', 'warnings', 'wave', 'weakref', 'webbrowser', 'whichdb', 'wsgiref', 'xdrlib', 'xml', 'xmllib', 'xmlrpclib', 'zipfile', 'sphinx', 'pygments', 'docutils', 'boto3', 'botocore', 'boto', 'yaml', 'builtins', 'enum', 'colorama', 'pkg_resources', 'click', 'matplotlib', 'OpenGL', 'scipy', 'sklearn', 'cvxpy', 'cvxopt', 'future', 'six', 'glob2', 'tblib', 'dill', 'multiprocess']
+Inspected Module <<<<<<<<<<<<<<<<>
+set()
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+numpy
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'numpy'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+code_generators
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'numpy', 'code_generators'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+binascii
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'numpy', 'code_generators', 'binascii'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+math
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'numpy', 'code_generators', 'math', 'binascii'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+pickle5
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'binascii', 'math', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+genapi
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'binascii', 'math', 'genapi', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+numpy_api
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'binascii', 'math', 'genapi', 'numpy_api', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+_thread
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+sys
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+pathlib
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pathlib', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+operator
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pathlib', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+itertools
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pathlib', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+pytest
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+_operator
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+grp
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+errno
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'errno', 'genapi', 'numpy_api', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+pwd
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'errno', 'genapi', 'numpy_api', 'pwd', '_thread', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+nt
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'errno', 'genapi', 'numpy_api', 'pwd', '_thread', 'nt', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+_codecs
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'errno', '_codecs', 'genapi', 'numpy_api', 'pwd', '_thread', 'nt', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+pywren
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'code_generators', 'pytest', 'pathlib', 'binascii', 'math', '_operator', 'grp', 'errno', '_codecs', 'genapi', 'numpy_api', 'pwd', '_thread', 'nt', 'pywren', 'sys', 'numpy', 'pickle5', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+cStringIO
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'grp', 'errno', 'pywren', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', '_codecs', 'code_generators', 'pytest', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+time
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'grp', 'errno', 'pywren', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+imp
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'grp', 'errno', 'pywren', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+tornado
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'grp', 'errno', 'pywren', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+msvcrt
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+watchtower
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+jsonpickle
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+signal
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'signal', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+_signal
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', '_signal', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'signal', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+_imp
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', '_signal', '_imp', 'binascii', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'signal', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+queue
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', '_signal', '_imp', 'binascii', 'queue', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'signal', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+__builtin__
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+Inspected Module <<<<<<<<<<<<<<<<>
+{'math', 'cStringIO', 'pathlib', 'pickle5', 'tornado', 'msvcrt', 'grp', 'errno', 'pywren', 'watchtower', 'sys', 'numpy', '_signal', '_imp', 'binascii', 'queue', '_operator', 'genapi', 'numpy_api', 'pwd', 'time', '_codecs', '__builtin__', 'code_generators', 'pytest', 'imp', 'nt', '_thread', 'jsonpickle', 'signal', 'operator', 'itertools'}
+Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>
+zlib
+Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>
+execute3 <<<<<<<<
+b'\x80\x02cpywren.serialize.cloudpickle.cloudpickle\n_fill_function\nq\x00(cpywren.serialize.cloudpickle.cloudpickle\n_make_skel_func\nq\x01cpywren.serialize.cloudpickle.cloudpickle\n_builtin_type\nq\x02X\x08\x00\x00\x00CodeTypeq\x03\x85q\x04Rq\x05(K\x01K\x00K\x01K\x04KCc_codecs\nencode\nq\x06X\x1e\x00\x00\x00t\x00j\x01|\x00d\x01\x13\x00t\x00j\x02d\x02\xc2\x8d\x02j\x03|\x00|\x00\xc2\x83\x02S\x00q\x07X\x06\x00\x00\x00latin1q\x08\x86q\tRq\nNK\x02X\x05\x00\x00\x00dtypeq\x0b\x85q\x0c\x87q\r(X\x05\x00\x00\x00numpyq\x0eX\x06\x00\x00\x00arangeq\x0fX\x07\x00\x00\x00float64q\x10X\x07\x00\x00\x00reshapeq\x11tq\x12X\x01\x00\x00\x00xq\x13\x85q\x14XG\x00\x00\x00C:\\Users\\xifer\\LightWeightServerlessBigData\\playground\\pywrenMapTest.pyq\x15X\n\x00\x00\x00numpy_testq\x16K\nh\x06X\x02\x00\x00\x00\x00\x01q\x17h\x08\x86q\x18Rq\x19))tq\x1aRq\x1bJ\xff\xff\xff\xff}q\x1c\x87q\x1dRq\x1e}q\x1fh\x0ecpywren.serialize.cloudpickle.cloudpickle\nsubimport\nq h\x0e\x85q!Rq"sN}q#X\x08\x00\x00\x00__main__q$NtR.'
+execute3 <<<<<<<<
+execute4 <<<<<<<<
+[b'\x80\x02K\x01.', b'\x80\x02K\x04.', b'\x80\x02K\x05.', b'\x80\x02K\x06.']
+execute4 <<<<<<<<
+execute5 <<<<<<<<
+{'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\site-packages\\pywren', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\imp.py', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\site-packages\\watchtower', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\signal.py', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\operator.py', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\site-packages\\jsonpickle', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\queue.py', 'C:\\Users\\xifer\\AppData\\Local\\Programs\\Python\\Python36\\lib\\pathlib.py'}
+C:\Users\xifer\AppData\Local\Programs\Python\Python36\lib\site-packages\pywren\serialize
+C:\Users\xifer\AppData\Local\Programs\Python\Python36\lib\site-packages\pywren\serialize\tmp
+path temp <<<<<<<<<<<<<<<<<<<<<<<<
+True
+import pywren
+ not print
+0
+# from sympy import *
+
+0
+import numpy
+
+1
+def my_map_function3(x):
+
+2
+    return my_map3(x) + 7
+
+1
+def my_map3(x):
+
+2
+    return x-20
+
+1
+def summer_sol(x):
+
+2
+    return sum(x)+5
+
+<<<<
+x):
+
+<<<<<
+x
+1
+def numpy_test(x):
+
+2
+    return numpy.arange(x**2, dtype=numpy.float64).reshape(x, x)
+
+1
+# def printEQ(x):
+
+Edit here at os.py
+execute5 <<<<<<<<
+State Machine numpy_test-1555521529.4310691 with arn arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691 created successfully
+input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,
+{'data': 1, 'call_id': '00000'}
+input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,
+{'data': 4, 'call_id': '00001'}
+input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,
+{'data': 5, 'call_id': '00002'}
+input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,
+{'data': 6, 'call_id': '00003'}
+{'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': 'dcd5231f-6134-11e9-a8f8-a1a9716d74d1', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': 'dcd5231f-6134-11e9-a8f8-a1a9716d74d1', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1356'}, 'RetryAttempts': 0}}
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': 'f4b86768-6134-11e9-a8f8-a1a9716d74d1', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': 'f4b86768-6134-11e9-a8f8-a1a9716d74d1', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1356'}, 'RetryAttempts': 0}}
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '0c9ae7a5-6135-11e9-a8f8-a1a9716d74d1', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '0c9ae7a5-6135-11e9-a8f8-a1a9716d74d1', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1356'}, 'RetryAttempts': 0}}
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal())}
+RUNNING
+not here
+{'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 675000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 505000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 441000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 365000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '24811186-6135-11e9-a8f8-a1a9716d74d1', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '24811186-6135-11e9-a8f8-a1a9716d74d1', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1464'}, 'RetryAttempts': 0}}
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': '332e49cd-6155-48cf-869d-862f7156f71c', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 48, 34000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 675000, tzinfo=tzlocal())}
+FAILED
+here please
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 935000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 505000, tzinfo=tzlocal())}
+FAILED
+here please
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'f0707d72-8ee4-4883-b730-b25933af65f1', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 842000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 441000, tzinfo=tzlocal())}
+FAILED
+here please
+{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:numpy_test-1555521529.4310691', 'name': 'd4e18599-57aa-4062-9071-92a85b2345cc', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 18, 0, 18, 47, 748000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 18, 0, 20, 18, 365000, tzinfo=tzlocal())}
+FAILED
+here please
+State succ<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[]
+0
+State fail<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+['arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:332e49cd-6155-48cf-869d-862f7156f71c', 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d1b6d3f9-1b52-4be2-99a2-ee5790dad31a', 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:f0707d72-8ee4-4883-b730-b25933af65f1', 'arn:aws:states:eu-central-1:251584899486:execution:numpy_test-1555521529.4310691:d4e18599-57aa-4062-9071-92a85b2345cc']
+4
+State undone<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[]
+0
+<<<<<<
+[{'ErrorType': 'Lambda.Unknown', 'Description': 'The cause could not be determined because Lambda did not return an error type.', 'Call_number': '{"input": "numpy_test-1555521513.373166/00003/input.json", "call_id": "00003"}'}, {'ErrorType': 'Lambda.Unknown', 'Description': 'The cause could not be determined because Lambda did not return an error type.', 'Call_number': '{"input": "numpy_test-1555521513.373166/00002/input.json", "call_id": "00003"}'}, {'ErrorType': 'Lambda.Unknown', 'Description': 'The cause could not be determined because Lambda did not return an error type.', 'Call_number': '{"input": "numpy_test-1555521513.373166/00001/input.json", "call_id": "00003"}'}, {'ErrorType': 'Lambda.Unknown', 'Description': 'The cause could not be determined because Lambda did not return an error type.', 'Call_number': '{"input": "numpy_test-1555521513.373166/00000/input.json", "call_id": "00003"}'}]
+None
