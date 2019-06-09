@@ -11,7 +11,7 @@ account:
 
 s3:
     bucket: BUCKET_NAME
-    # pywren_prefix: pywren.jobs
+    pywren_prefix: pywren.jobs
     bucket_output: OUTPUT_NAME
 
 # runtime:

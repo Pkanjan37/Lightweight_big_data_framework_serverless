@@ -67,8 +67,8 @@ def get_aws_account_id(verbose=True):
               help='aws region to run in')
 @click.option('--bucket_name', default=pywren.wrenconfig.AWS_S3_BUCKET_DEFAULT,
               help='s3 bucket name for intermediates')
-# @click.option('--bucket_prefix', default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
-#               help='prefix for S3 keys used for input and output')
+@click.option('--bucket_prefix', default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
+              help='prefix for S3 keys used for input and output')
 @click.option('--lambda_role',
               default=pywren.wrenconfig.AWS_LAMBDA_ROLE_DEFAULT,
               help='name of the IAM role we are creating')
@@ -84,7 +84,7 @@ def get_aws_account_id(verbose=True):
               help='force overwrite an existing file')
 @click.option('--pythonver', default=pywren.runtime.version_str(sys.version_info),
               help="Python version to use for runtime")
-def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket,
+def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket,bucket_prefix,
                    pythonver):
     """
     Create a config file initialized with the defaults, and
@@ -114,7 +114,7 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
     default_yaml = default_yaml.replace('OUTPUT_NAME', output_bucket)
     # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
     # print(default_yaml)
-    # default_yaml = default_yaml.replace('pywren.jobs', bucket_prefix)
+    default_yaml = default_yaml.replace('pywren.jobs', bucket_prefix)
     # default_yaml = default_yaml.replace('pywren-queue', sqs_queue)
     # default_yaml = default_yaml.replace('pywren-standalone', standalone_name)
     if pythonver not in pywren.wrenconfig.default_runtime:

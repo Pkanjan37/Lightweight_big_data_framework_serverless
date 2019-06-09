@@ -173,14 +173,14 @@ def interactive_setup(ctx, dryrun, suffix):
         create_bucket = click.confirm(
             "Bucket does not currently exist, would you like to create it?", default=True)
 
-    # click.echo("PyWren prefixes every object it puts in S3 with a particular prefix.")
-    # bucket_pywren_prefix = click_validate_prompt(
-    #     "PyWren s3 prefix: ",
-    #     default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
-    #     validate_func=validate_s3_prefix)
+    click.echo("PyWren prefixes every object it puts in S3 with a particular prefix.")
+    bucket_pywren_prefix = click_validate_prompt(
+        "PyWren s3 prefix: ",
+        default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
+        validate_func=validate_s3_prefix)
 
     lambda_config_advanced = click.confirm(
-        "Would you like to configure advanced PyWren properties?", default=False)
+        "Would you like to configure advanced properties?", default=False)
     lambda_role = ds(pywren.wrenconfig.AWS_LAMBDA_ROLE_DEFAULT)
     # function_name = ds(pywren.wrenconfig.AWS_LAMBDA_FUNCTION_NAME_DEFAULT)
 
@@ -209,7 +209,7 @@ def interactive_setup(ctx, dryrun, suffix):
                lambda_role=lambda_role,
                output_bucket=output_bucket,
             #    function_name=function_name,
-            #    bucket_prefix=bucket_pywren_prefix,
+               bucket_prefix=bucket_pywren_prefix,
                force=True)
     if dryrun:
         click.echo("dryrun is set, not manipulating cloud state.")
