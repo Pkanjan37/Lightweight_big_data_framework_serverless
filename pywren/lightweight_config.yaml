@@ -12,7 +12,7 @@ account:
 s3:
     bucket: BUCKET_NAME
     # pywren_prefix: pywren.jobs
-    bucket_output: OUTPUT_BUCKET_NAME
+    bucket_output: OUTPUT_NAME
 
 # runtime:
 #     s3_bucket: RUNTIME_BUCKET

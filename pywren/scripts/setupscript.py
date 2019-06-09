@@ -162,6 +162,7 @@ def interactive_setup(ctx, dryrun, suffix):
     if not check_bucket_exists(s3_bucket):
         create_bucket = click.confirm(
             "Bucket does not currently exist, would you like to create it?", default=True)
+
     output_bucket = click_validate_prompt(
         "Lightweight requires an output bucket to store output data. " + \
             "What s3 bucket would you like to use?",
@@ -198,7 +199,8 @@ def interactive_setup(ctx, dryrun, suffix):
     # click.echo("PyWren standalone mode uses dedicated AWS instances to run PyWren tasks. " + \
     #            "This is more flexible, but more expensive with fewer simultaneous workers.")
     # use_standalone = click.confirm("Would you like to enable PyWren standalone mode?")
-
+    print(s3_bucket)
+    print(output_bucket)
     click.echo("Creating config {}".format(config_filename))
     ctx.obj = {"config_filename" : config_filename}
     ctx.invoke(lightweightcli.create_config,

@@ -1,0 +1,4 @@
+[console_scripts]
+lightweight = pywren.scripts.lightweightcli:main
+pywren-setup = pywren.scripts.setupscript:interactive_setup
+

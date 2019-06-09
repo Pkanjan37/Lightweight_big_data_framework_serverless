@@ -67,14 +67,17 @@ def get_aws_account_id(verbose=True):
               help='aws region to run in')
 @click.option('--bucket_name', default=pywren.wrenconfig.AWS_S3_BUCKET_DEFAULT,
               help='s3 bucket name for intermediates')
-@click.option('--bucket_prefix', default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
-              help='prefix for S3 keys used for input and output')
+# @click.option('--bucket_prefix', default=pywren.wrenconfig.AWS_S3_PREFIX_DEFAULT,
+#               help='prefix for S3 keys used for input and output')
 @click.option('--lambda_role',
               default=pywren.wrenconfig.AWS_LAMBDA_ROLE_DEFAULT,
               help='name of the IAM role we are creating')
-@click.option('--function_name',
-              default=pywren.wrenconfig.AWS_LAMBDA_FUNCTION_NAME_DEFAULT,
-              help='lambda function name')
+@click.option('--output_bucket',
+              default=pywren.wrenconfig.AWS_OUTPUT_BUCKET_DEFAULT,
+              help='s3 bucket name for output')
+# @click.option('--function_name',
+#               default=pywren.wrenconfig.AWS_LAMBDA_FUNCTION_NAME_DEFAULT,
+#               help='lambda function name')
 # @click.option('--standalone_name', default='pywren-standalone',
 #               help='ec2 standalone server name and profile name')
 @click.option('--force', is_flag=True, default=False,
@@ -88,12 +91,13 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
     put it in your ~/.pywren_config
 
     """
+    print("eiei")
     filename = ctx.obj['config_filename']
     # copy default config file
 
     # FIXME check if it exists
     default_yaml = open(os.path.join(SOURCE_DIR, "../lightweight_config.yaml")).read()
-
+    
     client = boto3.client("sts")
     account_id = client.get_caller_identity()["Account"]
 
@@ -105,7 +109,11 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
 
     # default_yaml = default_yaml.replace('pywren1', function_name)
     default_yaml = default_yaml.replace('BUCKET_NAME', bucket_name)
-    default_yaml = default_yaml.replace('OUTPUT_BUCKET_NAME', output_bucket)
+    
+    # print(output_bucket)
+    default_yaml = default_yaml.replace('OUTPUT_NAME', output_bucket)
+    # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    # print(default_yaml)
     # default_yaml = default_yaml.replace('pywren.jobs', bucket_prefix)
     # default_yaml = default_yaml.replace('pywren-queue', sqs_queue)
     # default_yaml = default_yaml.replace('pywren-standalone', standalone_name)
@@ -130,7 +138,7 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
 
     default_yaml = default_yaml.replace("RUNTIME_KEY", k)
 
-    default_yaml = default_yaml.replace("TARGET_AMI", target_ami)
+    # default_yaml = default_yaml.replace("TARGET_AMI", target_ami)
 
     # print out message about the stuff you need to do
     if os.path.exists(filename) and not force:

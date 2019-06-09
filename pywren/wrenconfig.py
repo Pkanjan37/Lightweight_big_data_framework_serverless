@@ -30,12 +30,13 @@ AWS_ROLE = "helloworld_exec_role"
 
 ROLE = "arn:aws:iam::{}:role/{}".format(AWS_ACCOUNT_ID, AWS_ROLE)
 
-AWS_REGION_DEFAULT = 'us-west-2'
-AWS_S3_BUCKET_DEFAULT = "pywren.data"
-AWS_S3_PREFIX_DEFAULT = "pywren.jobs"
-AWS_LAMBDA_ROLE_DEFAULT = 'pywren_exec_role_1'
-AWS_LAMBDA_FUNCTION_NAME_DEFAULT = 'pywren_1'
-AWS_SQS_QUEUE_DEFAULT = 'pywren-jobs-1'
+AWS_REGION_DEFAULT = 'eu-central-1'
+AWS_S3_BUCKET_DEFAULT = "lightweight.data"
+AWS_OUTPUT_BUCKET_DEFAULT = "lightweight.output"
+AWS_S3_PREFIX_DEFAULT = "lightweight.jobs"
+AWS_LAMBDA_ROLE_DEFAULT = 'lightweight_exec_role_1'
+# AWS_LAMBDA_FUNCTION_NAME_DEFAULT = 'pywren_1'
+AWS_SQS_QUEUE_DEFAULT = 'lightweight-jobs-1'
 
 MAX_AGG_DATA_SIZE = 4e6
 
@@ -63,7 +64,7 @@ def load(config_filename):
     return res
 
 def get_default_home_filename():
-    default_home_filename = os.path.join(os.path.expanduser("~/.pywren_config"))
+    default_home_filename = os.path.join(os.path.expanduser("~/.lightweight_config"))
     return default_home_filename
 
 
@@ -77,8 +78,8 @@ def get_default_config_filename():
         config_filename = os.environ['PYWREN_CONFIG_FILE']
         # FIXME log this
 
-    elif os.path.exists(".pywren_config"):
-        config_filename = os.path.abspath('.pywren_config')
+    elif os.path.exists(".lightweight_config"):
+        config_filename = os.path.abspath('.lightweight_config')
 
     else:
         config_filename = get_default_home_filename()

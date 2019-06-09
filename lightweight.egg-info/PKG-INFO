@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: lightweight
+Version: 0.4.0
+Summary: Run many big data jobs transparently on AWS Lambda
+Home-page: UNKNOWN
+Author: Pichaya Kanjanapisith
+Author-email: pichaya@outlook.com
+License: UNKNOWN
+Description: Lightweight lets you transparently run your python functionson AWS cloud services, Lihtweight build on-top of Pywren framework
+Platform: UNKNOWN
