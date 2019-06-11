@@ -49,8 +49,8 @@ Theoretically will allow for cross-AZ invocations
 """
 class Executor(object):
 
-    def __init__(self, invoker, config, job_max_runtime):
-        self.invoker = invoker
+    def __init__(self, config, job_max_runtime):
+        # self.invoker = invoker
         self.job_max_runtime = job_max_runtime
 
         self.config = config
@@ -139,13 +139,13 @@ class Executor(object):
             arg_dict.update(overwrite_invoke_args)
 
         # do the invocation
-        self.invoker.invoke(arg_dict)
+        # self.invoker.invoke(arg_dict)
 
         host_job_meta['lambda_invoke_timestamp'] = lambda_invoke_time_start
         host_job_meta['lambda_invoke_time'] = time.time() - lambda_invoke_time_start
 
 
-        host_job_meta.update(self.invoker.config())
+        # host_job_meta.update(self.invoker.config())
 
         logger.info("call_async {} {} lambda invoke complete".format(callset_id, call_id))
 

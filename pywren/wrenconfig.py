@@ -93,7 +93,7 @@ def patch_storage_config(config_data):
     patched_config = copy.deepcopy(config_data)
     patched_config['storage_backend'] = 's3'
     patched_config['storage_prefix'] = config_data['s3']['pywren_prefix']
-    patched_config['runtime']['runtime_storage'] = 's3'
+    # patched_config['runtime']['runtime_storage'] = 's3'
     return patched_config
 
 

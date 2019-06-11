@@ -218,10 +218,11 @@ def interactive_setup(ctx, dryrun, suffix):
     if create_bucket:
         click.echo("Creating bucket {}.".format(s3_bucket))
         ctx.invoke(lightweightcli.create_bucket)
+        ctx.invoke(lightweightcli.create_output_bucket)
     click.echo("Creating role.")
     ctx.invoke(lightweightcli.create_role)
-    click.echo("Deploying lambda.")
-    ctx.invoke(lightweightcli.deploy_lambda)
+    # click.echo("Deploying lambda.")
+    # ctx.invoke(lightweightcli.deploy_lambda)
 
     # if use_standalone:
     #     click.echo("Setting up standalone mode.")
@@ -230,7 +231,7 @@ def interactive_setup(ctx, dryrun, suffix):
     #     ctx.invoke(pywrencli.create_instance_profile)
     click.echo("Pausing for 10 sec for changes to propagate.")
     time.sleep(10)
-    ctx.invoke(lightweightcli.test_function)
+    # ctx.invoke(lightweightcli.test_function)
 
 if __name__ == '__main__':
     interactive_setup() # pylint: disable=no-value-for-parameter

@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: lightweight
-Version: 0.4.0
+Version: 0.0.1
 Summary: Run many big data jobs transparently on AWS Lambda
 Home-page: UNKNOWN
 Author: Pichaya Kanjanapisith

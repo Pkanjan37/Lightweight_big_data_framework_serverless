@@ -23,8 +23,8 @@ from pywren.storage import storage, storage_utils
 def downloader(package):
     packagePath = os.path.dirname(pywren.__file__)
     print("package path<<<<<<<<",packagePath)
-    print(packagePath+"\\serialize\\template"+"\\"+package)
-    if not os.path.exists(packagePath+"\\serialize\\template"+"\\"+package):
+    print(packagePath+"//serialize//template"+"//"+package)
+    if not os.path.exists(packagePath+"//serialize//template"+"//"+package):
         listWhl = glob.glob('*.whl')
         print("old file<<<<<<<<")
         print(listWhl)
@@ -42,7 +42,7 @@ def downloader(package):
         # Extract all the contents of zip file in different directory
                 zipObj.extractall(packagePath+'//serialize//template')
 def createLambdaFunction(funcN,zipName,config,storage_instance):
-    fullZip = zipName+"\\"+funcN+".zip"
+    fullZip = zipName+"//"+funcN+".zip"
     upload_function(storage_instance,funcN,fullZip)
     lambda_client = boto3.client('lambda')
     storage_conf = storage_instance.get_storage_config_wrapped()
@@ -112,8 +112,8 @@ def create_lambda_func(lambda_client,name,role,func,bucket,memSize):
 
 def zipfile2(name,dir_name,dest_dir):
     # shutil.make_archive(name, 'zip', dir_name)
-    if os.path.exists(dest_dir+"\\"+name+".zip"):
-        os.remove(dest_dir+"\\"+name+".zip")
+    if os.path.exists(dest_dir+"//"+name+".zip"):
+        os.remove(dest_dir+"//"+name+".zip")
     else:
         print("The file does not exist")
     make_archiveWarp(name,dir_name,dest_dir)
@@ -127,19 +127,19 @@ def zipdir(path, ziph):
         for file in files:
             ziph.write(os.path.join(root, file))
 def make_archiveWarp(nameN,source, destination):
-        base = os.path.basename(destination)
+        # base = os.path.basename(destination)
         name = nameN
         format = 'zip'
         archive_from = source
-        archive_to = os.path.basename(source.strip(os.sep))
+        # archive_to = os.path.basename(source.strip(os.sep))
         shutil.make_archive(name, format, archive_from)
         shutil.move('%s.%s'%(name,format), destination)
 
-def sourceBuilder(path,funcN,dir_path):   
+def sourceBuilder(path,funcN,dir_path,storage_instance):   
     funcName = funcN
     fileName = funcName+".py"
     f = open(path, "r")
-    w = open(dir_path+"\\"+fileName, "w")
+    w = open(dir_path+"//"+fileName, "w")
     indent = False
     argument=''
     w.write("import json\n")
@@ -148,6 +148,11 @@ def sourceBuilder(path,funcN,dir_path):
     w.write("import time\n")
     w.write("import signal\n")
     # w.write("import jsonpickle\n")
+    storage_conf = storage_instance.get_storage_config_wrapped()
+    print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
+    print(storage_conf)
+    input_bucket = storage_conf['bucket']
+    output_bucket = storage_conf['bucket_output']
     for x in f:
         if "import" in x:
             if "pywren" in x:
@@ -178,7 +183,7 @@ def sourceBuilder(path,funcN,dir_path):
     w.write("   try:\n")
     w.write("       with Timeout(840):\n")    
     w.write("           s3 = boto3.client('s3')\n")
-    w.write("           bucket_in= 'xifer-pywren-118'\n")
+    w.write("           bucket_in= '"+input_bucket+"'\n")
     w.write("           plusfile = event['input']\n")
     w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
     w.write("           input_data = r['Body'].read().decode()\n")
@@ -186,7 +191,7 @@ def sourceBuilder(path,funcN,dir_path):
     # w.write("    received_data = jsonpickle.decode(received_data)\n")
     w.write("           inputData = received_data['data']\n")
     w.write("           compute = "+funcName+"(inputData)\n")
-    w.write("           bucket_out= 'output-bucky'\n")
+    w.write("           bucket_out= '"+output_bucket+"'\n")
     w.write("           compute = jsonpickle.encode(compute)\n")
     w.write("           output_data = {'output':compute}\n")
     w.write("           output_data = json.dumps(output_data)\n")
@@ -214,38 +219,47 @@ def zipper(directory,path,func,conf,storage_instance):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
         print(dir_path)
-        # zipPath = dir_path+'\\tmp'
+        # zipPath = dir_path+'//tmp'
         # try:
         #     shutil.rmtree(zipPath)
         # except OSError as e:
         #     print ("Error: %s - %s." % (e.filename, e.strerror))
-        pathTmp = dir_path+'\\tmp' 
+        pathTmp = dir_path+'//tmp' 
         print(pathTmp)
         print("path temp <<<<<<<<<<<<<<<<<<<<<<<<")
         print(os.path.exists(pathTmp))
         if os.path.exists(pathTmp):
             shutil.rmtree(pathTmp)
-        os.makedirs(pathTmp)
+        # os.makedirs(pathTmp)
+        sitepackPath = dir_path+'//template//site-packages'
+        # if os.path.exists(sitepackPath):
+        #     shutil.rmtree(sitepackPath)
+        # os.makedirs(sitepackPath)
         
-        sourceBuilder(path,func,pathTmp)
-        shutil.copytree(dir_path+'\\template\\site-packages',pathTmp)
+        shutil.copytree(sitepackPath,pathTmp)
+        sourceBuilder(path,func,pathTmp,storage_instance)
         
         for i in directory:
-            libDirectory = i.split("\\")
+            libDirectory = i.split("/")
             libFolder = libDirectory[len(libDirectory)-1]
             if not i.endswith('pywren') and not i.endswith('.py'):
                 # print(i)
                 # print("-------")
-                # print(path+'\\'+libFolder)
-                moduleName = i.split("\\")
-                tempModulePath = ".//serialize//template"+"//"+moduleName[len(moduleName)-1]
+                # print(path+'//'+libFolder)
+                moduleName = i.split("/")
+                tempModulePath = ".//serialize//template/"+moduleName[len(moduleName)-1]
                 print("Temp module Path <<<<<<<<<<<<<<<<<<<<<<<<<")
                 print(tempModulePath)
                 if os.path.exists(tempModulePath):
-                    shutil.copytree(tempModulePath,pathTmp+'\\'+libFolder)
-                    
+                    try:
+                        shutil.copytree(tempModulePath,pathTmp+'//'+libFolder)
+                    except Exception as e:
+                        print(tempModulePath+" already exist")
                 else:
-                    shutil.copytree(i,pathTmp+'\\'+libFolder)
+                    try:
+                        shutil.copytree(i,pathTmp+'//'+libFolder)
+                    except Exception as e:
+                        print(i+" already exist")
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()

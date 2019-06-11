@@ -43,7 +43,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'Click', 'boto3', 'PyYAML',
-        'enum34', 'flaky', 'glob2',
+        'numpy', 'flaky', 'glob2',
         'watchtower', 'tblib','jsonpickle' # it's nuts that we need both botos
     ],
     # tests_requires=[
@@ -51,7 +51,7 @@ setup(
     # ],
     entry_points={
         'console_scripts' : ['lightweight=pywren.scripts.lightweightcli:main',
-                             'pywren-setup=pywren.scripts.setupscript:interactive_setup'
+                             'lightweight-setup=pywren.scripts.setupscript:interactive_setup'
                             #  ,'pywren-server=pywren.scripts.standalone:server'
                              ]},
     package_data={
@@ -60,7 +60,7 @@ setup(
                    'ec2_standalone_files/supervisord.conf',
                    'ec2_standalone_files/supervisord.init',
                    'ec2_standalone_files/cloudwatch-agent.config',
-                   'jobrunner/jobrunner.py',
+                   'jobrunner/jobrunner.py'
         ]},
     dependency_links=['https://github.com/Pkanjan37/LightWeightServerlessBigData'],
     include_package_data=True

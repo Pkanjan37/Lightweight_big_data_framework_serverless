@@ -211,6 +211,21 @@ def create_bucket(ctx):
         kwargs = {}
     s3.create_bucket(Bucket=config['s3']['bucket'], **kwargs)
 
+@click.command("create_output_bucket")
+@click.pass_context
+def create_output_bucket(ctx):
+    """
+    Creates S3 buckets used by PyWren.
+    """
+    config_filename = ctx.obj['config_filename']
+    config = pywren.wrenconfig.load(config_filename)
+
+    s3 = boto3.client("s3")
+    region = config['account']['aws_region']
+    kwargs = {'CreateBucketConfiguration': {'LocationConstraint': region}}
+    if region == 'us-east-1':
+        kwargs = {}
+    s3.create_bucket(Bucket=config['s3']['bucket_output'], **kwargs)
 
 @click.command("create_instance_profile")
 @click.pass_context
@@ -428,11 +443,11 @@ def test_function(ctx):
     config = pywren.wrenconfig.load(config_filename)
 
     wrenexec = pywren.default_executor(config=config)
-    def hello_world(_):
+    def hello_world():
         return "Hello world"
-
-    fut = wrenexec.call_async(hello_world, None)
-    res = fut.result(storage_handler=wrenexec.storage)
+    input = [1]
+    fut = wrenexec.call_async(hello_world, input)
+    res = fut.result_state()
 
     click.echo("function returned: {}".format(res))
 
@@ -649,6 +664,7 @@ cli.add_command(test_function)
 cli.add_command(get_aws_account_id)
 cli.add_command(create_role)
 cli.add_command(create_bucket)
+cli.add_command(create_output_bucket)
 cli.add_command(create_instance_profile)
 cli.add_command(delete_instance_profile)
 cli.add_command(delete_role)

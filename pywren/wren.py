@@ -60,10 +60,10 @@ def lambda_executor(config=None, job_max_runtime=280):
         config = wrenconfig.default()
 
     AWS_REGION = config['account']['aws_region']
-    FUNCTION_NAME = config['lambda']['function_name']
-    invoker = invokers.LambdaInvoker(AWS_REGION, FUNCTION_NAME)
+    # FUNCTION_NAME = config['lambda']['function_name']
+    # invoker = invokers.LambdaInvoker(AWS_REGION, FUNCTION_NAME)
 
-    return Executor(invoker, config, job_max_runtime)
+    return Executor( config, job_max_runtime)
 
 
 def dummy_executor(config=None, job_max_runtime=300):
