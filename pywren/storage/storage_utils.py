@@ -120,7 +120,7 @@ def get_storage_path(config):
         raise NotImplementedError(
             ("Using {} as storage backend is not supported yet").format(
                 config['storage_backend']))
-    return [config['storage_backend'], config['backend_config']['bucket'], config['storage_prefix']]
+    return [config['storage_backend'], config['backend_config']['bucket']]
 
 
 def check_storage_path(config, prev_path):

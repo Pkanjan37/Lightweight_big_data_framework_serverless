@@ -37,7 +37,7 @@ class Storage(object):
 
     def __init__(self, config):
         self.storage_config = config
-        self.prefix = config['storage_prefix']
+        # self.prefix = config['storage_prefix']
         self.backend_type = config['storage_backend']
         if config['storage_backend'] == 's3':
             self.backend_handler = S3Backend(config['backend_config'])

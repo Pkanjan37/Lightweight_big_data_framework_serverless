@@ -44,6 +44,7 @@ class S3Backend(object):
         # print(data)
         # print(key)
         # print('put object <<<<<<<<<<<<')
+        # print(self.s3_bucket)
         self.s3client.put_object(Bucket=self.s3_bucket, Key=key, Body=data)
 
     def get_object(self, key):

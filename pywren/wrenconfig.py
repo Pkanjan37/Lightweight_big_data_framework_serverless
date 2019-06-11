@@ -92,7 +92,7 @@ def patch_storage_config(config_data):
 
     patched_config = copy.deepcopy(config_data)
     patched_config['storage_backend'] = 's3'
-    patched_config['storage_prefix'] = config_data['s3']['pywren_prefix']
+    # patched_config['storage_prefix'] = config_data['s3']['pywren_prefix']
     # patched_config['runtime']['runtime_storage'] = 's3'
     return patched_config
 
@@ -114,7 +114,7 @@ def default():
 def extract_storage_config(config):
     storage_config = dict()
     storage_config['storage_backend'] = config['storage_backend']
-    storage_config['storage_prefix'] = config['storage_prefix']
+    # storage_config['storage_prefix'] = config['storage_prefix']
     if storage_config['storage_backend'] == 's3':
         storage_config['backend_config'] = {}
         storage_config['backend_config']['bucket'] = config['s3']['bucket']

@@ -9,6 +9,7 @@ import importlib
 import pywren
 import glob
 from pywren.storage import storage, storage_utils
+from pathlib import PurePath
 # def copytree(src, dst, symlinks=False, ignore=None):
 #     for item in os.listdir(src):
 #         s = os.path.join(src, item)
@@ -240,16 +241,24 @@ def zipper(directory,path,func,conf,storage_instance):
         sourceBuilder(path,func,pathTmp,storage_instance)
         
         for i in directory:
-            libDirectory = i.split("/")
+            # libDirectory = i.split("/")
+            libDirectory = PurePath(i).parts
+            print("libDirectory Naja <<<<<<<<<<<<<<<<<<<<<<<<<")
+            print(libDirectory)
             libFolder = libDirectory[len(libDirectory)-1]
+            print(libFolder)
             if not i.endswith('pywren') and not i.endswith('.py'):
                 # print(i)
                 # print("-------")
                 # print(path+'//'+libFolder)
-                moduleName = i.split("/")
+                # moduleName = i.split("/")
+                moduleName = PurePath(i).parts
+                print("module Name Naja <<<<<<<<<<<<<<<")
+                print(moduleName)
                 tempModulePath = ".//serialize//template/"+moduleName[len(moduleName)-1]
                 print("Temp module Path <<<<<<<<<<<<<<<<<<<<<<<<<")
                 print(tempModulePath)
+                # raise Exception 
                 if os.path.exists(tempModulePath):
                     try:
                         shutil.copytree(tempModulePath,pathTmp+'//'+libFolder)

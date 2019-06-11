@@ -19,7 +19,7 @@ def expire(x):
 # def printEQ(x):
 def lambda_handler(event, context):
    try:
-       with Timeout(15):
+       with Timeout(840):
            s3 = boto3.client('s3')
            bucket_in= 'xifer-pywren-118'
            plusfile = event['input']
