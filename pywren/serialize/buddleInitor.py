@@ -10,6 +10,8 @@ import pywren
 import glob
 from pywren.storage import storage, storage_utils
 from pathlib import PurePath
+import inspect
+from pywren.serialize import default_preinstalls
 # def copytree(src, dst, symlinks=False, ignore=None):
 #     for item in os.listdir(src):
 #         s = os.path.join(src, item)
@@ -136,13 +138,18 @@ def make_archiveWarp(nameN,source, destination):
         shutil.make_archive(name, format, archive_from)
         shutil.move('%s.%s'%(name,format), destination)
 
-def sourceBuilder(path,funcN,dir_path,storage_instance):   
+def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
+    # print("default_preinstall <<<<<<<<<<<")
+    # print(default_preinstalls.modules)   
     funcName = funcN
     fileName = funcName+".py"
+    lines = inspect.getsource(funcObj)
+    print("Source Code Naja")
+    print(lines)
     f = open(path, "r")
     w = open(dir_path+"//"+fileName, "w")
     indent = False
-    argument=''
+    # argument=''
     w.write("import json\n")
     w.write("import boto3\n")
     w.write("import jsonpickle\n")
@@ -157,29 +164,76 @@ def sourceBuilder(path,funcN,dir_path,storage_instance):
     for x in f:
         if "import" in x:
             if "pywren" in x:
-                print(x+" not print")
+                print(x+" not inculde pywren")
             else:
-                print("0")
+                moduleOnly = ""
+                # Inculde only module that importable
+                if x.startswith('import'):
+                    tmp = x.split("import")[1]
+                    moduleOnly = tmp.split("as")[0]
+                    moduleOnly = moduleOnly.replace(" ", "").replace('\r', '').replace('\n', '')
+                    # moduleOnly = moduleOnly.rstrip("\n\r")
+                    print("temp777 <<<<<<<<<<")
+                    print(tmp)
+                    print(moduleOnly)
+                elif x.startswith('from'):
+                    tmp = x.split("from")[1]
+                    moduleOnly = tmp.split("import")[0]
+                    moduleOnly = moduleOnly.replace(" ", "").replace('\r', '').replace('\n', '')
+                    # moduleOnly = moduleOnly.rstrip("\n\r")
+                    print("temp888 <<<<<<<<<<")
+                    print(tmp)
+                    print(moduleOnly)
+                print("the f boys")
                 print(x)
-                w.write(x)
-        elif "def " in x:
-            if funcName in x:
-                tmp = x.split("(")[1]
-                print("<<<<")
-                print(tmp)
-                argument = tmp.split(")")[0]
-                print("<<<<<")
-                print(argument)
-            print("1")
-            print(x)
-            w.write(x)
-            indent = True
-        elif x.startswith(' ') and indent==True:
-            print("2")
-            print(x)
-            w.write(x)
-        elif indent==True:
-            indent = False
+                for k in allModuleName:
+                    print("ALL module")
+                    print(k)
+                    print(moduleOnly)
+                    print(moduleOnly==k)
+                    if k == moduleOnly:
+                        print("0")
+                        print(x)
+                        w.write(x)
+                    # else: 
+                    #     print("Idiot") 
+                    #     print(x)
+                for d in default_preinstalls.modules:
+                    # print("D1 oUter <<,")
+                    # print(d[1])
+                     if d[0] == moduleOnly:
+                    
+                        print("D0 <<<<<<<<")
+                        print(d[0])
+                        if d[1] == False:  
+                            print("<<<<<<")
+                            print(d[0])
+                            print(x)
+                            print("0.5")
+                            print(x)
+                            w.write(x)
+                # print("0")
+                # print(x)
+                # w.write(x)
+        # elif "def " in x:
+        #     # if funcName in x:
+        #     #     tmp = x.split("(")[1]
+        #     #     print("<<<<")
+        #     #     print(tmp)
+        #     #     argument = tmp.split(")")[0]
+        #     #     print("<<<<<")
+        #     #     print(argument)
+        #     print("1")
+        #     print(x)
+        #     w.write(x)
+        #     indent = True
+        # elif x.startswith(' ') and indent==True:
+        #     print("2")
+        #     print(x)
+        #     w.write(x)
+        # elif indent==True:
+        #     indent = False
+    w.write(lines)
     w.write("def lambda_handler(event, context):\n")
     w.write("   try:\n")
     w.write("       with Timeout(840):\n")    
@@ -216,7 +270,7 @@ def sourceBuilder(path,funcN,dir_path,storage_instance):
     w.write("       raise  TimeoutError('Execution time exceed the limit')\n")
     
 
-def zipper(directory,path,func,conf,storage_instance):
+def zipper(directory,path,func,conf,storage_instance,funcObj):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
         print(dir_path)
@@ -238,8 +292,7 @@ def zipper(directory,path,func,conf,storage_instance):
         # os.makedirs(sitepackPath)
         
         shutil.copytree(sitepackPath,pathTmp)
-        sourceBuilder(path,func,pathTmp,storage_instance)
-        
+        allModuleName =[]
         for i in directory:
             # libDirectory = i.split("/")
             libDirectory = PurePath(i).parts
@@ -256,6 +309,7 @@ def zipper(directory,path,func,conf,storage_instance):
                 print("module Name Naja <<<<<<<<<<<<<<<")
                 print(moduleName)
                 tempModulePath = ".//serialize//template/"+moduleName[len(moduleName)-1]
+                allModuleName.append(moduleName[len(moduleName)-1])
                 print("Temp module Path <<<<<<<<<<<<<<<<<<<<<<<<<")
                 print(tempModulePath)
                 # raise Exception 
@@ -269,9 +323,13 @@ def zipper(directory,path,func,conf,storage_instance):
                         shutil.copytree(i,pathTmp+'//'+libFolder)
                     except Exception as e:
                         print(i+" already exist")
+        print("ALL module name")
+        print(allModuleName)
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()
+        sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj)
+        raise Exception("eiei")
         zipfile2(func,pathTmp,dir_path)
         createLambdaFunction(func,dir_path,conf,storage_instance)
         # givePermission(func)

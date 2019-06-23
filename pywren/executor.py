@@ -285,7 +285,7 @@ class Executor(object):
         module_data = create_mod_data(mod_paths)
         print("execute5 <<<<<<<<")
         print(mod_paths)
-        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage)
+        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func)
         print("execute5 <<<<<<<<")
         ### Create func and upload
         func_module_str = pickle.dumps({'func' : func_str,

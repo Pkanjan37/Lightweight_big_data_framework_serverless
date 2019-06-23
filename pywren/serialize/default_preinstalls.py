@@ -291,6 +291,7 @@ modules = [
     ('this', False),
     ('threading', False),
     ('timeit', False),
+    ('time',False),
     ('tkColorChooser', False),
     ('tkCommonDialog', False),
     ('tkFileDialog', False),
