@@ -108,6 +108,9 @@ def validate_lambda_function_name(function_name): # pylint: disable=unused-argum
 def validate_lambda_role_name(role_name): # pylint: disable=unused-argument
     # FIXME
     return True
+def validate_sfn_role_name(role_name): # pylint: disable=unused-argument
+    # FIXME
+    return True
 
 @click.command()
 @click.option('--dryrun', default=False, is_flag=True, type=bool,
@@ -182,6 +185,7 @@ def interactive_setup(ctx, dryrun, suffix):
     lambda_config_advanced = click.confirm(
         "Would you like to configure advanced properties?", default=False)
     lambda_role = ds(pywren.wrenconfig.AWS_LAMBDA_ROLE_DEFAULT)
+    sfn_role = ds(pywren.wrenconfig.AWS_STEPFUNC_ROLE_DEFAULT)
     # function_name = ds(pywren.wrenconfig.AWS_LAMBDA_FUNCTION_NAME_DEFAULT)
 
     if lambda_config_advanced:
@@ -191,6 +195,12 @@ def interactive_setup(ctx, dryrun, suffix):
             "would like created for your lambda",
             default=lambda_role,
             validate_func=validate_lambda_role_name)
+        sfn_role = click_validate_prompt(
+            "Each State machine runs as a particular"
+            "IAM role. What is the name of the role you"
+            "would like created for your Step Function",
+            default=sfn_role,
+            validate_func=validate_sfn_role_name)
         # function_name = click_validate_prompt(
         #     "Each lambda function has a particular function name."
         #     "What is your function name?",
@@ -208,6 +218,7 @@ def interactive_setup(ctx, dryrun, suffix):
                bucket_name=s3_bucket,
                lambda_role=lambda_role,
                output_bucket=output_bucket,
+               sfn_role=sfn_role,
             #    function_name=function_name,
                bucket_prefix=bucket_pywren_prefix,
                force=True)

@@ -70,7 +70,7 @@ class Storage(object):
     
     def contruct_input_json(self,input,index):
         if isinstance(input, numpy.int64) or isinstance(input, numpy.int32): return int(input)  
-        data = {"data":input,"call_id":index}
+        data = {"data":jsonpickle.encode(input),"call_id":index}
         # data = jsonpickle.encode(data)
         return data
 

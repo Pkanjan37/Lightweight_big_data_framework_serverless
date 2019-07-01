@@ -2,6 +2,7 @@ account:
     aws_account_id: AWS_ACCOUNT_ID
     aws_lambda_role: pywren_exec_role
     aws_region: AWS_REGION
+    aws_sfn_role: sfn_role
 
 
 lambda:

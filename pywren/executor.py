@@ -40,7 +40,7 @@ from pywren.storage import storage_utils
 from pywren.storage.storage_utils import create_func_key
 from pywren.wait import wait, ALL_COMPLETED
 import jsonpickle
-
+import sys
 logger = logging.getLogger(__name__)
 
 
@@ -61,7 +61,6 @@ class Executor(object):
         self.input_list=[]
         self.output_path=[]
         self.storage_path = storage_utils.get_storage_path(self.storage_config)
-
 
         # if 'preinstalls' in self.runtime_meta_info:
         #     logger.info("using serializer with meta-supplied preinstalls")
@@ -182,7 +181,7 @@ class Executor(object):
     def map(self, func, iterdata, extra_env=None, extra_meta=None,
             invoke_pool_threads=64, data_all_as_one=True,
             use_cached_runtime=True, overwrite_invoke_args=None,
-            exclude_modules=None):
+            exclude_modules=None,instance_specify=None):
         """
         :param func: the function to map over the data
         :param iterdata: An iterable of input data
@@ -228,6 +227,20 @@ class Executor(object):
         print("execute2 <<<<<<<<")
         if not data:
             return []
+        if instance_specify == None:
+            instance_input = "small"
+            for i in data:
+                estimate_input_size = sys.getsizeof(i)
+                if estimate_input_size <= 45000000:
+                    instance_input = "small" 
+                elif estimate_input_size < 500000000 and estimate_input_size>45000000 and instance_input=="small":
+                    instance_input = "medium"
+                elif estimate_input_size< 1000000000 and estimate_input_size> 500000000 and (instance_input=="small" or instance_input == "medium"):
+                    instance_input = "large"
+                else: raise Exception(" The size of input for each worker is exceeded maximum ")
+            print(instance_input)
+        else : instance_input = instance_specify
+            # raise Exception("eiei")
 
         if self.map_item_limit is not None and len(data) > self.map_item_limit:
             raise ValueError("len(data) ={}, exceeding map item limit of {}"\
@@ -249,9 +262,9 @@ class Executor(object):
         print(func_str)
         print("execute3 <<<<<<<<")
         data_strs = func_and_data_ser[1:]
-        print("execute4 <<<<<<<<")
-        print(data_strs)
-        print("execute4 <<<<<<<<")
+        # print("execute4 <<<<<<<<")
+        # print(data_strs)
+        # print("execute4 <<<<<<<<")
         data_size_bytes = sum(len(x) for x in data_strs)
         agg_data_key = None
         host_job_meta['agg_data'] = False
@@ -297,47 +310,19 @@ class Executor(object):
         # self.storage.put_func(func_key, func_module_str)
         host_job_meta['func_upload_time'] = time.time() - func_upload_time
         host_job_meta['func_upload_timestamp'] = time.time()
-        # def invoke(data_str, callset_id, call_id, func_key,
-        #            host_job_meta,
-        #            agg_data_key=None, data_byte_range=None):
-        #     keys = storage_utils.create_keys(self.storage.prefix,
-        #                                      callset_id, call_id)
-        #     data_key, output_key, status_key, cancel_key = keys
-
-        #     host_job_meta['job_invoke_timestamp'] = time.time()
-
-        #     if agg_data_key is None:
-        #         data_upload_time = time.time()
-        #         self.put_data(data_key, data_str,
-        #                       callset_id, call_id)
-        #         data_upload_time = time.time() - data_upload_time
-        #         host_job_meta['data_upload_time'] = data_upload_time
-        #         host_job_meta['data_upload_timestamp'] = time.time()
-
-        #         data_key = data_key
-        #     else:
-        #         data_key = agg_data_key
-
-        #     return self.invoke_with_keys(func_key, data_key,
-        #                                  output_key,
-        #                                  status_key,
-        #                                  cancel_key,
-        #                                  callset_id, call_id, extra_env,
-        #                                  extra_meta, data_byte_range,
-        #                                  use_cached_runtime, host_job_meta.copy(),
-        #                                  self.job_max_runtime,
-        #                                  overwrite_invoke_args=overwrite_invoke_args)
-
+   
         N = len(data)
         # call_result_objs = []
         input_path_list=[]
         stepFunc = stepFunctionbuilder.StateFunctionWrapper()
         stateMachineName = func.__name__+"-"+str(time.time())
         # create state machine
-        state = stepFunc.stateBuildeer(func.__name__)
+        state = stepFunc.stateBuildeer(func.__name__,instance_input)
         print("state machine definition :<<<<<<<<<<<<<<<<<<<"+state)
+        # raise Exception("eiei")
+        stepFuncRole = "arn:aws:iam::{}:role/{}".format(self.config['account']['aws_account_id'], self.config['account']['aws_sfn_role'])
 
-        stateMachine = stepFunc.create_state_machine(stateMachineName,str(state),"arn:aws:iam::251584899486:role/StepLamb")
+        stateMachine = stepFunc.create_state_machine(stateMachineName,str(state),stepFuncRole)
         self.stateMachine_arn = stateMachine
         # make a call here
         for i in range(N):

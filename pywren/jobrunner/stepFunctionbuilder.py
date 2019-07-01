@@ -132,165 +132,333 @@ class StateFunctionWrapper(object):
         data={"input":inputExecutor,"call_id":call_id}
         return json.dumps(data)
 
-    def stateBuildeer(self,func):
+    def stateBuildeer(self,func,instance_input):
+
         resource = "arn:aws:lambda:eu-central-1:251584899486:function:"+func+"-128"
         resource2 = "arn:aws:lambda:eu-central-1:251584899486:function:"+func+'-1600'
         resource3 = "arn:aws:lambda:eu-central-1:251584899486:function:"+func+'-2688'
-        data = {
-  "Comment": "Executor",
-  "StartAt": "Submit Job",
-  "States": {
-    "Submit Job": {
-      "Type": "Task",
-      "Resource":resource,
-       "Catch": [   {
-          "ErrorEquals": ["TimeoutError"],
-          "ResultPath": "$.error-info",
-          "Next": "ChangeInstance"
-        }],
-      "Retry": [
-        {
-          "ErrorEquals": ["States.Timeout"],
-          "MaxAttempts": 0
+        if instance_input == "small":
+            data = {
+    "Comment": "Executor",
+    "StartAt": "Submit Job",
+    "States": {
+        "Submit Job": {
+        "Type": "Task",
+        "Resource":resource,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "ChangeInstance"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
+        "End": True
         },
-        {
-          "ErrorEquals": ["States.TaskFailed"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.Permissions"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ResultPathMatchFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ParameterPathFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.BranchFailed"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.NoChoiceMatched"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ALL"],
-          "IntervalSeconds": 5,
-          "MaxAttempts": 2,
-          "BackoffRate": 2.0
-        }
-      ],
-      "End": True
-    },
-    "ChangeInstance": {
-      "Type": "Task",
-      "Resource":resource2,
-      "Catch": [   {
-          "ErrorEquals": ["TimeoutError"],
-          "ResultPath": "$.error-info",
-          "Next": "ChangeInstance2"
-        }],
-      "Retry": [
-        {
-          "ErrorEquals": ["States.Timeout"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.TaskFailed"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.Permissions"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ResultPathMatchFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ParameterPathFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.BranchFailed"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.NoChoiceMatched"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ALL"],
-          "IntervalSeconds": 5,
-          "MaxAttempts": 2,
-          "BackoffRate": 2.0
-        }
-      ],
+        "ChangeInstance": {
+        "Type": "Task",
+        "Resource":resource2,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "ChangeInstance2"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
 
-      "End": True
-    },
-    "ChangeInstance2": {
-      "Type": "Task",
-      "Resource":resource3,
-       "Catch": [   {
-          "ErrorEquals": ["TimeoutError"],
-          "ResultPath": "$.error-info",
-          "Next": "FailState"
-        }],
-      "Retry": [
-        {
-          "ErrorEquals": ["States.Timeout"],
-          "MaxAttempts": 0
+        "End": True
         },
-        {
-          "ErrorEquals": ["States.TaskFailed"],
-          "MaxAttempts": 0
+        "ChangeInstance2": {
+        "Type": "Task",
+        "Resource":resource3,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "FailState"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
+        "End": True
+        },     "FailState": {
+            "Type": "Fail",
+            "Error": "TimeOut",
+            "Cause": "Execution fail, it take more than 15 minites even for largest instance, please change input accordingly"
+    }
+    }
+    }
+        elif instance_input == "medium":
+            data =  {
+    "Comment": "Executor",
+    "StartAt": "Submit Job",
+    "States": {
+        "Submit Job": {
+        "Type": "Task",
+        "Resource":resource2,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "ChangeInstance"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
+        "End": True
         },
-        {
-          "ErrorEquals": ["States.Timeout"],
-          "MaxAttempts": 0
+        "ChangeInstance": {
+        "Type": "Task",
+        "Resource":resource3,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "FailState"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
+        "End": True
+        },     "FailState": {
+            "Type": "Fail",
+            "Error": "TimeOut",
+            "Cause": "Execution fail, it take more than 15 minites even for largest instance, please change input accordingly"
+    }
+    }
+    }
+        elif instance_input == "large":
+            data =  {
+    "Comment": "Executor",
+    "StartAt": "Submit Job",
+    "States": {
+        "Submit Job": {
+        "Type": "Task",
+        "Resource":resource3,
+        "Catch": [   {
+            "ErrorEquals": ["TimeoutError"],
+            "ResultPath": "$.error-info",
+            "Next": "FailState"
+            }],
+        "Retry": [
+            {
+            "ErrorEquals": ["States.Timeout"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.TaskFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.Permissions"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ResultPathMatchFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ParameterPathFailure"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.BranchFailed"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.NoChoiceMatched"],
+            "MaxAttempts": 0
+            },
+            {
+            "ErrorEquals": ["States.ALL"],
+            "IntervalSeconds": 5,
+            "MaxAttempts": 2,
+            "BackoffRate": 2.0
+            }
+        ],
+        "End": True
         },
-        {
-          "ErrorEquals": ["States.Permissions"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ResultPathMatchFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ParameterPathFailure"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.BranchFailed"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.NoChoiceMatched"],
-          "MaxAttempts": 0
-        },
-        {
-          "ErrorEquals": ["States.ALL"],
-          "IntervalSeconds": 5,
-          "MaxAttempts": 2,
-          "BackoffRate": 2.0
-        }
-      ],
-      "End": True
-    },     "FailState": {
-          "Type": "Fail",
-          "Error": "TimeOut",
-          "Cause": "Execution fail, it take more than 15 minites even for largest instance, please change input accordingly"
-}
-  }
-}
-
+            "FailState": {
+            "Type": "Fail",
+            "Error": "TimeOut",
+            "Cause": "Execution fail, it take more than 15 minites even for largest instance, please change input accordingly"
+    }
+    }
+    }
         json_data = json.dumps(data)
+        # print(json_data)
+        # raise Exception("eieie")
         return json_data
 
     def create_state_machine(self, name, definition, role_arn):

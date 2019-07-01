@@ -72,6 +72,9 @@ def get_aws_account_id(verbose=True):
 @click.option('--lambda_role',
               default=pywren.wrenconfig.AWS_LAMBDA_ROLE_DEFAULT,
               help='name of the IAM role we are creating')
+@click.option('--sfn_role',
+              default=pywren.wrenconfig.AWS_STEPFUNC_ROLE_DEFAULT,
+              help='name of the step function IAM role we are creating')
 @click.option('--output_bucket',
               default=pywren.wrenconfig.AWS_OUTPUT_BUCKET_DEFAULT,
               help='s3 bucket name for output')
@@ -84,7 +87,7 @@ def get_aws_account_id(verbose=True):
               help='force overwrite an existing file')
 @click.option('--pythonver', default=pywren.runtime.version_str(sys.version_info),
               help="Python version to use for runtime")
-def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket,bucket_prefix,
+def create_config(ctx, force, aws_region, lambda_role,sfn_role, bucket_name,output_bucket,bucket_prefix,
                    pythonver):
     """
     Create a config file initialized with the defaults, and
@@ -97,7 +100,8 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
 
     # FIXME check if it exists
     default_yaml = open(os.path.join(SOURCE_DIR, "../lightweight_config.yaml")).read()
-    
+    print("B4 change")
+    print(default_yaml)
     client = boto3.client("sts")
     account_id = client.get_caller_identity()["Account"]
 
@@ -106,6 +110,8 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
     default_yaml = default_yaml.replace('AWS_ACCOUNT_ID', account_id)
     default_yaml = default_yaml.replace('AWS_REGION', aws_region)
     default_yaml = default_yaml.replace('pywren_exec_role', lambda_role)
+    default_yaml = default_yaml.replace('sfn_exec_role', sfn_role)
+    # print(default_yaml)
 
     # default_yaml = default_yaml.replace('pywren1', function_name)
     default_yaml = default_yaml.replace('BUCKET_NAME', bucket_name)
@@ -144,10 +150,12 @@ def create_config(ctx, force, aws_region, lambda_role, bucket_name,output_bucket
     if os.path.exists(filename) and not force:
         raise ValueError("{} already exists; not overwriting (did you need --force?)".format(
             filename))
-
+    print("<<<<<<<<<<<<<<<<<,")
+    print(default_yaml)
     open(filename, 'w').write(default_yaml)
     click.echo("new default file created in {}".format(filename))
     click.echo("lambda role is {}".format(lambda_role))
+    click.echo("step function role is {}".format(sfn_role))
 
 
 @click.command("test_config")
@@ -191,6 +199,24 @@ def create_role(ctx):
 
         iam.RolePolicy(role_name, '{}-more-permissions'.format(role_name)).put(
             PolicyDocument=more_json_policy)
+    else:
+        print("Using existing IAM role...")
+
+    json_sfn_policy = json.dumps(pywren.wrenconfig.sfn_role_policy)
+    role_sfn_name = config['account']['aws_sfn_role']
+    roles = [x for x in iamclient.list_roles()["Roles"] if x["RoleName"] == role_sfn_name]
+    if (len(roles) == 0):
+        iam.create_role(RoleName=role_sfn_name,
+                        AssumeRolePolicyDocument=json_sfn_policy)
+        sfn_more_json_policy = json.dumps(pywren.wrenconfig.sfn_more_policy)
+
+        AWS_ACCOUNT_ID = config['account']['aws_account_id']
+        AWS_REGION = config['account']['aws_region']
+        sfn_more_json_policy = sfn_more_json_policy.replace("AWS_ACCOUNT_ID", str(AWS_ACCOUNT_ID))
+        sfn_more_json_policy = sfn_more_json_policy.replace("AWS_REGION", AWS_REGION)
+
+        iam.RolePolicy(role_sfn_name, '{}-more-permissions'.format(role_sfn_name)).put(
+            PolicyDocument=sfn_more_json_policy)
     else:
         print("Using existing IAM role...")
 

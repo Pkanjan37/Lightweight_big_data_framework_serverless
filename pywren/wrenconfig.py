@@ -35,6 +35,7 @@ AWS_S3_BUCKET_DEFAULT = "lightweight.data"
 AWS_OUTPUT_BUCKET_DEFAULT = "lightweight.output"
 AWS_S3_PREFIX_DEFAULT = "lightweight.jobs"
 AWS_LAMBDA_ROLE_DEFAULT = 'lightweight_exec_role_1'
+AWS_STEPFUNC_ROLE_DEFAULT = 'lightweight_sfn_role_1'
 # AWS_LAMBDA_FUNCTION_NAME_DEFAULT = 'pywren_1'
 AWS_SQS_QUEUE_DEFAULT = 'lightweight-jobs-1'
 
@@ -140,6 +141,33 @@ basic_role_policy = {
     ]
 }
 
+sfn_role_policy = {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "states.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+sfn_more_policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
 # FIXME make these permissions more curtailed, esp. w.r.t. the target
 # bucket and the target sqs queue and the target logs
 
