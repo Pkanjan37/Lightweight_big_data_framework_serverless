@@ -69,8 +69,9 @@ class Storage(object):
         return path
     
     def contruct_input_json(self,input,index):
-        if isinstance(input, numpy.int64) or isinstance(input, numpy.int32): return int(input)  
+        # if isinstance(input, numpy.int64) or isinstance(input, numpy.int32): return int(input)  
         data = {"data":jsonpickle.encode(input),"call_id":index}
+        # print("y 0 wtf",data)
         # data = jsonpickle.encode(data)
         return data
 
@@ -178,7 +179,7 @@ def get_runtime_info(runtime_config):
         raise NotImplementedError(("Storing runtime in non-S3 storage is not " +
                                    "supported yet").format(runtime_config['runtime_storage']))
     config = dict()
-    print(runtime_config['s3_bucket']+"<<<")
+    # print(runtime_config['s3_bucket']+"<<<")
     config['bucket'] = runtime_config['s3_bucket']
     handler = S3Backend(config)
     key = runtime_config['s3_key']

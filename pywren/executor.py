@@ -181,7 +181,7 @@ class Executor(object):
     def map(self, func, iterdata, extra_env=None, extra_meta=None,
             invoke_pool_threads=64, data_all_as_one=True,
             use_cached_runtime=True, overwrite_invoke_args=None,
-            exclude_modules=None,instance_specify=None):
+            exclude_modules=None,instance_specify=None,s3_file_url=False):
         """
         :param func: the function to map over the data
         :param iterdata: An iterable of input data
@@ -207,24 +207,28 @@ class Executor(object):
         # print (os.path.basename(__file__))
         # print (os.path.abspath(inspect.stack()[0][1]))
         # print (inspect.stack()[1][1])
+        print(s3_file_url)
+        # raise Exception("eieieie")
         print (os.path.abspath(inspect.stack()[-1][1]))
         print("execute1 <<<<<<<<")
         print(iterdata)
         print(func)
-        import inspect
-        lines = inspect.getsource(func)
-        print("execute1.1 <<<<<<<<")
-        print(lines)
-        print("execute1.2 <<<<<<<<")
-        print(func.__name__)
-        print("execute1.2 <<<<<<<<")
+        # import inspect
+        # lines = inspect.getsource(func)
+        # print("execute1.1 <<<<<<<<")
+        # print(lines)
+        # print("execute1.2 <<<<<<<<")
+        # print(func.__name__)
+        # print("execute1.2 <<<<<<<<")
         
         print("execute1 <<<<<<<<")
         data = list(iterdata)
-        self.input_list = data
-        print("execute2 <<<<<<<<")
         print(data)
-        print("execute2 <<<<<<<<")
+        # raise Exception("Eieieieie")
+        self.input_list = data
+        # print("execute2 <<<<<<<<")
+        # print(data)
+        # print("execute2 <<<<<<<<")
         if not data:
             return []
         if instance_specify == None:
@@ -248,7 +252,7 @@ class Executor(object):
                              "number of items".format(len(data),
                                                       self.map_item_limit))
 
-        host_job_meta = {}
+        # host_job_meta = {}
         timeStampId=time.time()
 
         # pool = ThreadPool(invoke_pool_threads)
@@ -257,18 +261,18 @@ class Executor(object):
         ### pickle func and all data (to capture module dependencies
         func_and_data_ser, mod_paths = self.serializer([func] + data)
 
-        func_str = func_and_data_ser[0]
-        print("execute3 <<<<<<<<")
-        print(func_str)
-        print("execute3 <<<<<<<<")
-        data_strs = func_and_data_ser[1:]
+        # func_str = func_and_data_ser[0]
+        # print("execute3 <<<<<<<<")
+        # print(func_str)
+        # print("execute3 <<<<<<<<")
+        # data_strs = func_and_data_ser[1:]
         # print("execute4 <<<<<<<<")
         # print(data_strs)
         # print("execute4 <<<<<<<<")
-        data_size_bytes = sum(len(x) for x in data_strs)
-        agg_data_key = None
-        host_job_meta['agg_data'] = False
-        host_job_meta['data_size_bytes'] = data_size_bytes
+        # data_size_bytes = sum(len(x) for x in data_strs)
+        # agg_data_key = None
+        # host_job_meta['agg_data'] = False
+        # host_job_meta['data_size_bytes'] = data_size_bytes
 
         # if data_size_bytes < wrenconfig.MAX_AGG_DATA_SIZE and data_all_as_one:
         #     agg_data_key = storage_utils.create_agg_data_key(self.storage.prefix, callset_id)
@@ -296,20 +300,20 @@ class Executor(object):
                         mod_paths.remove(mod_path)
 
         module_data = create_mod_data(mod_paths)
-        print("execute5 <<<<<<<<")
+        # print("execute5 <<<<<<<<")
         print(mod_paths)
         buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func)
-        print("execute5 <<<<<<<<")
+        # print("execute5 <<<<<<<<")
         ### Create func and upload
-        func_module_str = pickle.dumps({'func' : func_str,
-                                        'module_data' : module_data}, -1)
-        host_job_meta['func_module_str_len'] = len(func_module_str)
+        # func_module_str = pickle.dumps({'func' : func_str,
+                                        # 'module_data' : module_data}, -1)
+        # host_job_meta['func_module_str_len'] = len(func_module_str)
 
-        func_upload_time = time.time()
+        # func_upload_time = time.time()
         # func_key = create_func_key(self.storage.prefix, callset_id)
         # self.storage.put_func(func_key, func_module_str)
-        host_job_meta['func_upload_time'] = time.time() - func_upload_time
-        host_job_meta['func_upload_timestamp'] = time.time()
+        # host_job_meta['func_upload_time'] = time.time() - func_upload_time
+        # host_job_meta['func_upload_timestamp'] = time.time()
    
         N = len(data)
         # call_result_objs = []
@@ -326,21 +330,31 @@ class Executor(object):
         self.stateMachine_arn = stateMachine
         # make a call here
         for i in range(N):
-            call_id = "{:05d}".format(i)
+            if s3_file_url == False:
+                print("s3_file_url >>>>>>>",s3_file_url)
+                call_id = "{:05d}".format(i)
 
-            # data_byte_range = None
-            # if agg_data_key is not None:
-            #     data_byte_range = agg_data_ranges[i]
-            # put input to s3
-            
-            path = self.storage.predefine_put_data(call_id,timeStampId,func.__name__)
-            input_path_list.append(path)
-            input_data_lambda = self.storage.contruct_input_json(data[i],call_id)
-            print("input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,")
-            print(input_data_lambda)
-            
-            input_data_lambda = json.dumps(input_data_lambda)
-            self.storage.put_data(path,input_data_lambda)
+                # data_byte_range = None
+                # if agg_data_key is not None:
+                #     data_byte_range = agg_data_ranges[i]
+                # put input to s3
+                
+                path = self.storage.predefine_put_data(call_id,timeStampId,func.__name__)
+                input_path_list.append(path)
+                # print(data[i])
+                # print(path)
+                # print(call_id)
+                
+                input_data_lambda = self.storage.contruct_input_json(data[i],call_id)
+                # print("input data >>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<,")
+                # print(input_data_lambda)
+                
+                input_data_lambda = json.dumps(input_data_lambda)
+                # raise Exception("eieeiieieei")
+                self.storage.put_data(path,input_data_lambda)
+            else:
+                call_id = "{:05d}".format(i)
+                input_path_list.append(data[i])
             
             # cb = pool.apply_async(invoke, (data_strs[i], callset_id,
             #                                call_id, func_key,

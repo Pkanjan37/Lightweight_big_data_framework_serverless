@@ -81,8 +81,8 @@ class ModuleDependencyAnalyzer(object):
     def get_and_clear_paths(self):
         # might be nice if this returned module names as well
         paths = self._paths_to_transmit
-        print("Solid path <<<<<<<<<<<<<<<<<<<<<<<<")
-        print(paths)
+        # print("Solid path <<<<<<<<<<<<<<<<<<<<<<<<")
+        # print(paths)
         if paths:
             self.has_module_dependencies = True
         self._paths_to_transmit = set()
@@ -92,11 +92,11 @@ class ModuleDependencyAnalyzer(object):
         """
         Determines what resources to send over (if any) for a given module.
         """
-        print("Inspected Module <<<<<<<<<<<<<<<<>")
-        print(self._inspected_modules)
-        print("Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>")
-        print(root_module_name)
-        print("Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>")
+        # print("Inspected Module <<<<<<<<<<<<<<<<>")
+        # print(self._inspected_modules)
+        # print("Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>")
+        # print(root_module_name)
+        # print("Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>")
         if root_module_name in self._inspected_modules:
             self._logger.debug('Already inspected module %r, skipping',
                                root_module_name)
@@ -156,16 +156,16 @@ class ModuleDependencyAnalyzer(object):
         elif mod_type == imp.PKG_DIRECTORY:
             self._logger.debug('Module %r is package. Recursing...',
                                root_module_name)
-            print("Soft module <<<<<<<<<<")
-            print(pathname)
-            print("Soft module <<<<<<<<<<")
-            print(root_module_name)
+            # print("Soft module <<<<<<<<<<")
+            # print(pathname)
+            # print("Soft module <<<<<<<<<<")
+            # print(root_module_name)
             # use below ?
             # self._paths_to_transmit.add(pathname)
             if self._deep_inspect_path(pathname, root_module_name):
                 self._paths_to_transmit.add(pathname)
-                print("Soft module add<<<<<<<<<<<<<<<")
-                print(self._paths_to_transmit)
+                # print("Soft module add<<<<<<<<<<<<<<<")
+                # print(self._paths_to_transmit)
                 self._logger.debug('Module %r has no c-extensions. Added path %r',
                                    root_module_name, pathname)
             else :

@@ -25,7 +25,7 @@ class S3Backend(object):
     """
 
     def __init__(self, s3config):
-        print(s3config)
+        # print(s3config)
         self.s3_bucket = s3config['bucket']
         self.s3_output_bucket = s3config['bucket_output']
         self.session = botocore.session.get_session()

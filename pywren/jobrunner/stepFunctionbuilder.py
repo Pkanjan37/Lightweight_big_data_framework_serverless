@@ -22,79 +22,87 @@ class StateFunctionWrapper(object):
       retryList = self.reason_failure(stateList)
     #   print(retryList)
 
-    def wait(self,arn,future,returnType,waitDuration=10):
-      succeedStateMachineList=[]
-      failedStateMachineList=[]
-      uncompletedStateMachineList=[]
-      numberOfTask = len(future)
-      numberOfCompletedTask=0
-      if returnType == self.ALL_COMPLETED:
-        while True:
-            data = self.get_execution(arn)
+    def wait(self,arn,future,returnType,waitDuration=1):
+        succeedStateMachineList=[]
+        failedStateMachineList=[]
+        uncompletedStateMachineList=[]
+        numberOfTask = len(future)
+        numberOfCompletedTask=0
+        if returnType == self.ALL_COMPLETED:
+           while True:
+            # solve thorttling API problem
+            
+            response1 = self.get_execution(arn,statusFilterV="SUCCEEDED")
+            response2 = self.get_execution(arn,statusFilterV="FAILED")
             # data = {'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:c046f37b-93b8-4db1-b155-533e0cf59a73', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'c046f37b-93b8-4db1-b155-533e0cf59a73', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 46000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 927000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:e292748b-3abd-412b-add1-62e143cff897', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'e292748b-3abd-412b-add1-62e143cff897', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 127000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 915000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:4cd7a938-0486-4722-8888-bc36ed0a7991', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': '4cd7a938-0486-4722-8888-bc36ed0a7991', 'status': 'FAILED', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 24, 951000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27,
 # 55, 781000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1138'}, 'RetryAttempts': 0}}
-            print(data)
+            # print(data)
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            print(len(response1['executions']))
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            if len(response1['executions'])+len(response2['executions']) == numberOfTask:
+                data = self.get_execution(arn)
+                for index in data['executions']:
+                    print(index)
+                    print(index['status'])
+                    if(index['status']=='SUCCEEDED'):
+                        # print("here please") 
+                        
+                        if(index['executionArn'] not in succeedStateMachineList):
+                            numberOfCompletedTask=numberOfCompletedTask+1
+                            succeedStateMachineList.append(index['executionArn'])
+                        if(numberOfCompletedTask==numberOfTask):
+                            return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList                         
+                    elif(index['status']=='FAILED'):
+                        # print("here please") 
+                        if(index['executionArn'] not in failedStateMachineList):
+                            numberOfCompletedTask=numberOfCompletedTask+1
+                            failedStateMachineList.append(index['executionArn'])
+                        if(numberOfCompletedTask==numberOfTask):
+                            return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList 
+                    else:
+                        # print("not here")
+                        time.sleep(waitDuration)
+        elif returnType == self.ANY_COMPLETED:
+            while True:
+                # solve thorttling API problem
+                data = self.get_execution(arn)
+                # data = {'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:c046f37b-93b8-4db1-b155-533e0cf59a73', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'c046f37b-93b8-4db1-b155-533e0cf59a73', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 46000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 927000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:e292748b-3abd-412b-add1-62e143cff897', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'e292748b-3abd-412b-add1-62e143cff897', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 127000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 915000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:4cd7a938-0486-4722-8888-bc36ed0a7991', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': '4cd7a938-0486-4722-8888-bc36ed0a7991', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 24, 951000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27,
+    # 55, 781000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1138'}, 'RetryAttempts': 0}}
+                print(data)
+                for index in data['executions']:
+                    if(index['status']=='SUCCEEDED'):
+                        
+                        if(index['executionArn'] not in succeedStateMachineList):
+                            succeedStateMachineList.append(index['executionArn'])                        
+                    elif(index['status']=='FAILED'):
+                        # print("here please") 
+                        if(index['executionArn'] not in failedStateMachineList):
+                            failedStateMachineList.append(index['executionArn'])
+                    else:                    
+                        if(index['executionArn'] not in uncompletedStateMachineList): 
+                            uncompletedStateMachineList.append(index['executionArn'])
+                        print(uncompletedStateMachineList)
+                
+                if len(succeedStateMachineList)>0 or len(failedStateMachineList)>0:
+                    return completedStateMachineList,uncompletedStateMachineList
+                time.sleep(waitDuration)
+        elif returnType == self.ALWAYS:
+                data = self.get_execution(arn)
+                # data = {'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:c046f37b-93b8-4db1-b155-533e0cf59a73', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'c046f37b-93b8-4db1-b155-533e0cf59a73', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 46000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 927000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:e292748b-3abd-412b-add1-62e143cff897', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'e292748b-3abd-412b-add1-62e143cff897', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 127000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 915000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:4cd7a938-0486-4722-8888-bc36ed0a7991', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': '4cd7a938-0486-4722-8888-bc36ed0a7991', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 24, 951000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27,
+    # 55, 781000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1138'}, 'RetryAttempts': 0}}
+                print(data)
+                for index in data['executions']:
+                    if(index['status']=='SUCCEEDED'):        
+                        if(index['executionArn'] not in succeedStateMachineList):
+                            succeedStateMachineList.append(index['executionArn'])                        
+                    elif(index['status']=='FAILED'):
+                        # print("here please") 
+                        if(index['executionArn'] not in failedStateMachineList):
+                            failedStateMachineList.append(index['executionArn'])
+                    else:uncompletedStateMachineList.append(index['executionArn'])
 
-            for index in data['executions']:
-                print(index)
-                print(index['status'])
-                if(index['status']=='SUCCEEDED'):
-                    # print("here please") 
-                    
-                    if(index['executionArn'] not in succeedStateMachineList):
-                        numberOfCompletedTask=numberOfCompletedTask+1
-                        succeedStateMachineList.append(index['executionArn'])
-                    if(numberOfCompletedTask==numberOfTask):
-                        return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList                         
-                elif(index['status']=='FAILED'):
-                    # print("here please") 
-                    if(index['executionArn'] not in failedStateMachineList):
-                        numberOfCompletedTask=numberOfCompletedTask+1
-                        failedStateMachineList.append(index['executionArn'])
-                    if(numberOfCompletedTask==numberOfTask):
-                        return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList 
-                else:
-                    # print("not here")
-                    time.sleep(waitDuration)
-      elif returnType == self.ANY_COMPLETED:
-          while True:
-            data = self.get_execution(arn)
-            # data = {'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:c046f37b-93b8-4db1-b155-533e0cf59a73', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'c046f37b-93b8-4db1-b155-533e0cf59a73', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 46000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 927000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:e292748b-3abd-412b-add1-62e143cff897', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'e292748b-3abd-412b-add1-62e143cff897', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 127000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 915000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:4cd7a938-0486-4722-8888-bc36ed0a7991', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': '4cd7a938-0486-4722-8888-bc36ed0a7991', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 24, 951000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27,
-# 55, 781000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1138'}, 'RetryAttempts': 0}}
-            print(data)
-            for index in data['executions']:
-                if(index['status']=='SUCCEEDED'):
-                    
-                    if(index['executionArn'] not in succeedStateMachineList):
-                        succeedStateMachineList.append(index['executionArn'])                        
-                elif(index['status']=='FAILED'):
-                    # print("here please") 
-                    if(index['executionArn'] not in failedStateMachineList):
-                        failedStateMachineList.append(index['executionArn'])
-                else:                    
-                    if(index['executionArn'] not in uncompletedStateMachineList): 
-                        uncompletedStateMachineList.append(index['executionArn'])
-                    print(uncompletedStateMachineList)
-            
-            if len(succeedStateMachineList)>0 or len(failedStateMachineList)>0:
-                return completedStateMachineList,uncompletedStateMachineList
-            time.sleep(waitDuration)
-      elif returnType == self.ALWAYS:
-            data = self.get_execution(arn)
-            # data = {'executions': [{'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:c046f37b-93b8-4db1-b155-533e0cf59a73', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'c046f37b-93b8-4db1-b155-533e0cf59a73', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 46000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 927000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:e292748b-3abd-412b-add1-62e143cff897', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': 'e292748b-3abd-412b-add1-62e143cff897', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 25, 127000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27, 55, 915000, tzinfo=tzlocal())}, {'executionArn': 'arn:aws:states:eu-central-1:251584899486:execution:my_map_function3-1554164784.7738473:4cd7a938-0486-4722-8888-bc36ed0a7991', 'stateMachineArn': 'arn:aws:states:eu-central-1:251584899486:stateMachine:my_map_function3-1554164784.7738473', 'name': '4cd7a938-0486-4722-8888-bc36ed0a7991', 'status': 'RUNNING', 'startDate': datetime.datetime(2019, 4, 2, 7, 26, 24, 951000, tzinfo=tzlocal()), 'stopDate': datetime.datetime(2019, 4, 2, 7, 27,
-# 55, 781000, tzinfo=tzlocal())}], 'ResponseMetadata': {'RequestId': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '4ece9e7b-5945-11e9-991b-4748fbc60275', 'content-type': 'application/x-amz-json-1.0', 'content-length': '1138'}, 'RetryAttempts': 0}}
-            print(data)
-            for index in data['executions']:
-                if(index['status']=='SUCCEEDED'):        
-                    if(index['executionArn'] not in succeedStateMachineList):
-                        succeedStateMachineList.append(index['executionArn'])                        
-                elif(index['status']=='FAILED'):
-                    # print("here please") 
-                    if(index['executionArn'] not in failedStateMachineList):
-                        failedStateMachineList.append(index['executionArn'])
-                else:uncompletedStateMachineList.append(index['executionArn'])
-
-            return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList
+                return succeedStateMachineList,failedStateMachineList,uncompletedStateMachineList
 
 
     def reason_failure(self,data,includeException=False):
@@ -493,10 +501,17 @@ class StateFunctionWrapper(object):
             if sm['name'] == name:
                 return sm['stateMachineArn']
 
-    def get_execution(self,arn,statusFilter=None):
-        if(statusFilter!=None):
-          response = self.client.list_executions(arn,statusFilter)
-        else: response = self.client.list_executions(stateMachineArn=arn)
+    def get_execution(self,arn,statusFilterV=None):
+        if(statusFilterV!=None):
+        #   print(statusFilterV)
+        #   print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+          response = self.client.list_executions(
+              stateMachineArn=arn,
+              statusFilter=statusFilterV,
+              maxResults=1000)
+        
+        else: 
+            response = self.client.list_executions(stateMachineArn=arn,maxResults=1000)
         return response
 
     def create_execution(self, sm_arn, input_data):

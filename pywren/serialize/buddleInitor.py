@@ -25,12 +25,12 @@ from pywren.serialize import default_preinstalls
 #         #     shutil.copy2(s, d)
 def downloader(package):
     packagePath = os.path.dirname(pywren.__file__)
-    print("package path<<<<<<<<",packagePath)
-    print(packagePath+"//serialize//template"+"//"+package)
+    # print("package path<<<<<<<<",packagePath)
+    # print(packagePath+"//serialize//template"+"//"+package)
     if not os.path.exists(packagePath+"//serialize//template"+"//"+package):
         listWhl = glob.glob('*.whl')
-        print("old file<<<<<<<<")
-        print(listWhl)
+        # print("old file<<<<<<<<")
+        # print(listWhl)
         if len(listWhl)>0:
             for file in listWhl:
                 os.remove(file)
@@ -39,7 +39,7 @@ def downloader(package):
         os.system(cmd)
         # Create a ZipFile Object and load sample.zip in it
         listWhl = glob.glob('*.whl')
-        print("download file<<<<<<<<",listWhl)
+        # print("download file<<<<<<<<",listWhl)
         if len(listWhl)>0:
             with ZipFile('.//'+listWhl[0], 'r') as zipObj:
         # Extract all the contents of zip file in different directory
@@ -49,11 +49,11 @@ def createLambdaFunction(funcN,zipName,config,storage_instance):
     upload_function(storage_instance,funcN,fullZip)
     lambda_client = boto3.client('lambda')
     storage_conf = storage_instance.get_storage_config_wrapped()
-    print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
-    print(storage_conf)
+    # print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
+    # print(storage_conf)
     input_bucket = storage_conf['bucket']
-    print("Configure storage2 <<<<<<<<<<<<<<<<<<<<<<<<")
-    print(input_bucket)
+    # print("Configure storage2 <<<<<<<<<<<<<<<<<<<<<<<<")
+    # print(input_bucket)
     AWS_LAMBDA_ROLE = config['account']['aws_lambda_role']
     AWS_ACCOUNT_ID = config['account']['aws_account_id']
     ROLE = "arn:aws:iam::{}:role/{}".format(AWS_ACCOUNT_ID, AWS_LAMBDA_ROLE)
@@ -123,10 +123,10 @@ def zipfile2(name,dir_name,dest_dir):
 def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
-        print("-----")
-        print(root)
-        print(dirs)
-        print(files)
+        # print("-----")
+        # print(root)
+        # print(dirs)
+        # print(files)
         for file in files:
             ziph.write(os.path.join(root, file))
 def make_archiveWarp(nameN,source, destination):
@@ -144,8 +144,8 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     funcName = funcN
     fileName = funcName+".py"
     lines = inspect.getsource(funcObj)
-    print("Source Code Naja")
-    print(lines)
+    # print("Source Code Naja")
+    # print(lines)
     f = open(path, "r")
     w = open(dir_path+"//"+fileName, "w")
     indent = False
@@ -157,8 +157,8 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     w.write("import signal\n")
     # w.write("import jsonpickle\n")
     storage_conf = storage_instance.get_storage_config_wrapped()
-    print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
-    print(storage_conf)
+    # print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
+    # print(storage_conf)
     input_bucket = storage_conf['bucket']
     output_bucket = storage_conf['bucket_output']
     for x in f:
@@ -184,15 +184,15 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
                     # print("temp888 <<<<<<<<<<")
                     # print(tmp)
                     # print(moduleOnly)
-                print(x)
+                # print(x)
                 for k in allModuleName:
                     # print("ALL module")
                     # print(k)
                     # print(moduleOnly)
                     # print(moduleOnly==k)
                     if k == moduleOnly:
-                        print("0")
-                        print(x)
+                        # print("0")
+                        # print(x)
                         w.write(x)
                     # else: 
                     #     print("Idiot") 
@@ -208,8 +208,8 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
                             # print("<<<<<<")
                             # print(d[0])
                             # print(x)
-                            print("0.5")
-                            print(x)
+                            # print("0.5")
+                            # print(x)
                             w.write(x)
                 # print("0")
                 # print(x)
@@ -241,18 +241,26 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     w.write("           plusfile = event['input']\n")
     w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
     w.write("           input_data = r['Body'].read().decode()\n")
+    w.write("           if 'call_id' in input_data:\n")
     # w.write("           input_data = \n")
-    w.write("           received_data = json.loads(input_data)\n")
+    w.write("               input_data = json.loads(input_data)\n")
     # w.write("           received_data = jsonpickle.decode(received_data)\n")
     # w.write("    received_data = jsonpickle.decode(received_data)\n")
-    w.write("           inputData = jsonpickle.decode(received_data['data'])\n")
+    w.write("               input_data = jsonpickle.decode(input_data['data'])\n")
     # w.write("           inputData = jsonpickle.decode(inputData)\n")
-    w.write("           compute = "+funcName+"(inputData)\n")
-    w.write("           bucket_out= '"+output_bucket+"'\n")
-    w.write("           compute = jsonpickle.encode(compute)\n")
-    w.write("           output_data = {'output':compute}\n")
-    w.write("           output_data = json.dumps(output_data)\n")
-    w.write("           s3.put_object(Bucket=bucket_out, Key=plusfile, Body=output_data)\n")
+    w.write("               compute = "+funcName+"(input_data)\n")
+    w.write("               bucket_out= '"+output_bucket+"'\n")
+    w.write("               compute = jsonpickle.encode(compute)\n")
+    w.write("               compute = {'output':compute}\n")
+    w.write("               compute = json.dumps(compute)\n")
+    w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
+    w.write("           else:\n")
+    w.write("               compute = "+funcName+"(input_data)\n")
+    w.write("               bucket_out= '"+output_bucket+"'\n")
+    w.write("               compute = jsonpickle.encode(compute)\n")
+    w.write("               compute = {'output':compute}\n")
+    w.write("               compute = json.dumps(compute)\n")
+    w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
     w.write("           return {\n")
     w.write("               'statusCode': 200,\n")
     w.write("           }\n")
@@ -275,16 +283,16 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
 def zipper(directory,path,func,conf,storage_instance,funcObj):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        print(dir_path)
+        # print(dir_path)
         # zipPath = dir_path+'//tmp'
         # try:
         #     shutil.rmtree(zipPath)
         # except OSError as e:
         #     print ("Error: %s - %s." % (e.filename, e.strerror))
         pathTmp = dir_path+'//tmp' 
-        print(pathTmp)
-        print("path temp <<<<<<<<<<<<<<<<<<<<<<<<")
-        print(os.path.exists(pathTmp))
+        # print(pathTmp)
+        # print("path temp <<<<<<<<<<<<<<<<<<<<<<<<")
+        # print(os.path.exists(pathTmp))
         if os.path.exists(pathTmp):
             shutil.rmtree(pathTmp)
         # os.makedirs(pathTmp)
@@ -298,22 +306,22 @@ def zipper(directory,path,func,conf,storage_instance,funcObj):
         for i in directory:
             # libDirectory = i.split("/")
             libDirectory = PurePath(i).parts
-            print("libDirectory Naja <<<<<<<<<<<<<<<<<<<<<<<<<")
-            print(libDirectory)
+            # print("libDirectory Naja <<<<<<<<<<<<<<<<<<<<<<<<<")
+            # print(libDirectory)
             libFolder = libDirectory[len(libDirectory)-1]
-            print(libFolder)
+            # print(libFolder)
             if not i.endswith('pywren') and not i.endswith('.py'):
                 # print(i)
                 # print("-------")
                 # print(path+'//'+libFolder)
                 # moduleName = i.split("/")
                 moduleName = PurePath(i).parts
-                print("module Name Naja <<<<<<<<<<<<<<<")
-                print(moduleName)
+                # print("module Name Naja <<<<<<<<<<<<<<<")
+                # print(moduleName)
                 tempModulePath = ".//serialize//template/"+moduleName[len(moduleName)-1]
                 allModuleName.append(moduleName[len(moduleName)-1])
-                print("Temp module Path <<<<<<<<<<<<<<<<<<<<<<<<<")
-                print(tempModulePath)
+                # print("Temp module Path <<<<<<<<<<<<<<<<<<<<<<<<<")
+                # print(tempModulePath)
                 # raise Exception 
                 if os.path.exists(tempModulePath):
                     try:
@@ -325,8 +333,8 @@ def zipper(directory,path,func,conf,storage_instance,funcObj):
                         shutil.copytree(i,pathTmp+'//'+libFolder)
                     except Exception as e:
                         print(i+" already exist")
-        print("ALL module name")
-        print(allModuleName)
+        # print("ALL module name")
+        # print(allModuleName)
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()
