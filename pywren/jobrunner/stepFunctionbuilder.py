@@ -22,7 +22,7 @@ class StateFunctionWrapper(object):
       retryList = self.reason_failure(stateList)
     #   print(retryList)
 
-    def wait(self,arn,future,returnType,waitDuration=1):
+    def wait(self,arn,future,returnType,waitDuration=10):
         succeedStateMachineList=[]
         failedStateMachineList=[]
         uncompletedStateMachineList=[]
