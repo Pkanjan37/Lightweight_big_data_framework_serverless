@@ -170,7 +170,9 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
                 # Inculde only module that importable
                 if x.startswith('import'):
                     tmp = x.split("import")[1]
-                    moduleOnly = tmp.split("as")[0]
+                    moduleOnly = tmp.split(" as ")[0]
+                    # print("temp666666")
+                    # print(moduleOnly)
                     moduleOnly = moduleOnly.replace(" ", "").replace('\r', '').replace('\n', '')
                     # moduleOnly = moduleOnly.rstrip("\n\r")
                     # print("temp777 <<<<<<<<<<")
@@ -193,15 +195,18 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
                     if k == moduleOnly:
                         # print("0")
                         # print(x)
-                        w.write(x)
+                            w.write(x)
                     # else: 
                     #     print("Idiot") 
                     #     print(x)
                 for d in default_preinstalls.modules:
-                    # print("D1 oUter <<,")
-                    # print(d[1])
+                    #  print("D1 oUter <<,")
+                    #  print(d)
+                    #  print("Module only")
+                    #  print(moduleOnly)
                      if d[0] == moduleOnly:
-                    
+                        # print("Match?")
+                        # print(d[0])
                         # print("D0 <<<<<<<<")
                         # print(d[0])
                         if d[1] == False:  
@@ -210,7 +215,7 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
                             # print(x)
                             # print("0.5")
                             # print(x)
-                            w.write(x)
+                                w.write(x)
                 # print("0")
                 # print(x)
                 # w.write(x)
@@ -333,12 +338,14 @@ def zipper(directory,path,func,conf,storage_instance,funcObj):
                         shutil.copytree(i,pathTmp+'//'+libFolder)
                     except Exception as e:
                         print(i+" already exist")
-        # print("ALL module name")
+        # print("ALL module name<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         # print(allModuleName)
+        
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()
         sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj)
+        # raise Exception("eiei")
         # raise Exception("eiei")
         zipfile2(func,pathTmp,dir_path)
         createLambdaFunction(func,dir_path,conf,storage_instance)

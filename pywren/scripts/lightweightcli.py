@@ -474,7 +474,7 @@ def test_function(ctx):
     input = [1]
     fut = wrenexec.call_async(hello_world, input)
     res = fut.result_state()
-
+    print("aaaaS")
     click.echo("function returned: {}".format(res))
 
 @click.command("print_latest_logs")

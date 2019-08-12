@@ -59,7 +59,13 @@ class ModuleDependencyAnalyzer(object):
         :param module_name: String of module name.
         """
         self._logger.debug('Queuing module %r', module_name)
+        # print("Queue module<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        # print(module_name)
+        # print("Queue module<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         root_module_name = self._extract_root_module(module_name)
+        # print("Rude module<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        # print(root_module_name)
+        # print("Rude module<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         self._modules_to_inspect.add(root_module_name)
         while self._modules_to_inspect:
             self._inspect(self._modules_to_inspect.pop())
@@ -97,11 +103,18 @@ class ModuleDependencyAnalyzer(object):
         # print("Inspected Module2 <<<<<<<<<<<<<<<<>>>>>>")
         # print(root_module_name)
         # print("Inspected Module3 <<<<<<<<<<<<<<<<>>>>>>")
-        if root_module_name in self._inspected_modules:
+        if root_module_name == "pandas":
+            self._inspected_modules.add(root_module_name)
+        
+        elif root_module_name in self._inspected_modules:
+            # print("Already inspected module?????????????????")
+            # print(root_module_name)
             self._logger.debug('Already inspected module %r, skipping',
                                root_module_name)
             return
         elif root_module_name in self._modules_to_ignore:
+            # print("ignored ????????????????<<<<<<<<<>>>>>>>>>>")
+            # print(root_module_name)
             self._logger.debug('Module %r is to be ignored, skipping',
                                root_module_name)
             return
@@ -112,6 +125,9 @@ class ModuleDependencyAnalyzer(object):
         self._logger.debug('Inspecting module %r', root_module_name)
         try:
             fp, pathname, description = imp.find_module(root_module_name)
+            # print("Find Module??????????????????????????????")
+            # print(root_module_name)
+            # print("Find Module??????????????????????????????")
         except ImportError:
             self._logger.debug('Could not find module %r, skipping',
                                root_module_name)
@@ -186,6 +202,9 @@ class ModuleDependencyAnalyzer(object):
         Returns True if this path is eligible to be sent (No c-extensions).
         Adds module references to list of modules to be inspected.
         """
+        # print("Deepppp <<<<<<<<<<<<<<<<<<<<<<<,")
+        # print(path)
+        # print("Deepppp <<<<<<<<<<<<<<<<<<<<<<<,")
         ret = True
         for _, submodule_name, _ in pkgutil.iter_modules([path]):
             self._logger.debug('Inspecting submodule %r', submodule_name)

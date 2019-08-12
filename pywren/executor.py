@@ -165,8 +165,8 @@ class Executor(object):
         return fut
 
     def call_async(self, func, data, extra_env=None,
-                   extra_meta=None):
-        return self.map(func, [data], extra_env, extra_meta)
+                   extra_meta=None,instance_specify=None):
+        return self.map(func, [data], extra_env, extra_meta,instance_specify=instance_specify)
 
     @staticmethod
     def agg_data(data_strs):
@@ -204,12 +204,12 @@ class Executor(object):
         # print (os.path.basename(__file__))
         # print (os.path.abspath(inspect.stack()[0][1]))
         # print (inspect.stack()[1][1])
-        print(s3_file_url)
+        # print(s3_file_url)
         # raise Exception("eieieie")
-        print (os.path.abspath(inspect.stack()[-1][1]))
-        print("execute1 <<<<<<<<")
-        print(iterdata)
-        print(func)
+        # print (os.path.abspath(inspect.stack()[-1][1]))
+        # print("execute1 <<<<<<<<")
+        # print(iterdata)
+        # print(func)
         # import inspect
         # lines = inspect.getsource(func)
         # print("execute1.1 <<<<<<<<")
@@ -218,9 +218,9 @@ class Executor(object):
         # print(func.__name__)
         # print("execute1.2 <<<<<<<<")
         
-        print("execute1 <<<<<<<<")
+        # print("execute1 <<<<<<<<")
         data = list(iterdata)
-        print(data)
+        # print(data)
         # raise Exception("Eieieieie")
         self.input_list = data
         # print("execute2 <<<<<<<<")
@@ -228,19 +228,40 @@ class Executor(object):
         # print("execute2 <<<<<<<<")
         if not data:
             return []
-        if instance_specify == None:
+        if instance_specify == None and s3_file_url == False:
             instance_input = "small"
             for i in data:
                 estimate_input_size = sys.getsizeof(i)
-                if estimate_input_size <= 45000000:
+                if estimate_input_size <= 35000000:
                     instance_input = "small" 
-                elif estimate_input_size < 500000000 and estimate_input_size>45000000 and instance_input=="small":
+                elif estimate_input_size < 400000000 and estimate_input_size>35000000 and instance_input=="small":
                     instance_input = "medium"
-                elif estimate_input_size< 1000000000 and estimate_input_size> 500000000 and (instance_input=="small" or instance_input == "medium"):
+                elif estimate_input_size< 1000000000 and estimate_input_size> 400000000 and (instance_input=="small" or instance_input == "medium"):
                     instance_input = "large"
                 else: raise Exception(" The size of input for each worker is exceeded maximum ")
-            print(instance_input)
+            
         else : instance_input = instance_specify
+        if s3_file_url == True:
+            storage_conf = self.storage.get_storage_config_wrapped()
+            input_bucket = storage_conf['bucket']
+            botoS3 = boto3.client('s3')
+            for i in data:
+                print(i)
+                result = botoS3.list_objects_v2(Bucket=input_bucket, Prefix=i)
+                print(result['Contents'][0]['Size'])
+                if result['Contents'][0]['Size'] <= 35000000:
+                    instance_input = "small" 
+                elif result['Contents'][0]['Size'] < 400000000 and result['Contents'][0]['Size']>35000000 and instance_input=="small":
+                    instance_input = "medium"
+                elif result['Contents'][0]['Size']< 1000000000 and result['Contents'][0]['Size']> 400000000 and (instance_input=="small" or instance_input == "medium"):
+                    instance_input = "large"
+                else: raise Exception(" The size of input for each worker is exceeded maximum ")
+                # print("end round<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+            # print("Bucketttttttt<<<<<<<<<<<<")
+            # print(input_bucket)
+  
+        
+
             # raise Exception("eiei")
 
         if self.map_item_limit is not None and len(data) > self.map_item_limit:
@@ -297,8 +318,9 @@ class Executor(object):
                         mod_paths.remove(mod_path)
 
         module_data = create_mod_data(mod_paths)
-        # print("execute5 <<<<<<<<")
+        print("execute5 <<<<<<<<")
         print(mod_paths)
+        print("execute5 <<<<<<<<")
         buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func)
         # print("execute5 <<<<<<<<")
         ### Create func and upload
@@ -408,7 +430,7 @@ class Executor(object):
         return self.call_async(reduce_func, list_of_futures,
                                extra_env=extra_env, extra_meta=extra_meta)
     def reducer(self, function, list_of_futures,
-               extra_env=None, extra_meta=None):
+               extra_env=None, extra_meta=None,instance_specify=None):
         """
         Apply a function across all futures.
 
@@ -422,7 +444,7 @@ class Executor(object):
 
 
         return self.call_async(function, list_of_futures.result_state(),
-                               extra_env=extra_env, extra_meta=extra_meta)
+                               extra_env=extra_env, extra_meta=extra_meta, instance_specify=instance_specify)
 
     def get_logs(self, future, verbose=True):
 

@@ -67,7 +67,7 @@ class SerializeIndependent(object):
         print("Module  denpen <<<<<<<<<<<<<<<<<<<<<<<<<<<")
         print(self._modulemgr)
         preinstalled_modules = [name for name, _ in self.preinstalled_modules]
-        print(preinstalled_modules)
+        # print(preinstalled_modules)
         self._modulemgr.ignore(preinstalled_modules)
 
         # f_kwargs = {}
@@ -102,8 +102,18 @@ class SerializeIndependent(object):
             #print 'paths to trans', self._modulemgr._paths_to_transmit
 
             mod_paths = self._modulemgr.get_and_clear_paths()
+            # print("Clear path +++++++++++++++++++++++++++++++++++")
+            # print(mod_paths)
+            # # print(self._modulemgr.get_and_clear_paths())
+            # print("Clear path +++++++++++++++++++++++++++++++++++")
+            # for i in self._modulemgr.get_and_clear_paths:
+            #     if( i == 'pandas'):
+            #         mod_paths.add('/home/p/.local/lib/python3.6/site-packages/pandas')
             #print "mod_paths=", mod_paths
-
+        print("Clear path +++++++++++++++++++++++++++++++++++")
+        print(mod_paths)
+            # print(self._modulemgr.get_and_clear_paths())
+        print("Clear path +++++++++++++++++++++++++++++++++++")
         return ([s.getvalue() for s in strs], mod_paths)
 
 if __name__ == "__main__":

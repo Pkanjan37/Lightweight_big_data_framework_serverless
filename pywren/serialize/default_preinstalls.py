@@ -336,7 +336,7 @@ modules = [
     ('enum', False),
     ('colorama', False),
     ('pkg_resources', False),
-    ('click', False),
+    ('click', True),
     ('matplotlib', False),
     ('OpenGL', False),
     ('scipy', False),
@@ -349,4 +349,5 @@ modules = [
     ('tblib', False),
     ('dill', False),
     ('multiprocess', False),
+    ('pandas', False),
 ]

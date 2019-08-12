@@ -26,6 +26,8 @@ pywren/wrenutil.py
 pywren/jobrunner/__init__.py
 pywren/jobrunner/stepFunctionbuilder.py
 pywren/scripts/__init__.py
+pywren/scripts/commands.py
+pywren/scripts/lightweightExecutionCLI.py
 pywren/scripts/lightweightcli.py
 pywren/scripts/setupscript.py
 pywren/scripts/standalone.py
