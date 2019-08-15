@@ -52,7 +52,7 @@ class ResponseStateFuture:
     execution and the result when available.
     """
     GET_RESULT_SLEEP_SECS = 4
-    def __init__(self, input_set, storage_path,statemachine_arn,storage_instance,output_path):
+    def __init__(self, input_set, storage_path,statemachine_arn,storage_instance,output_path,output_path_list=None):
 
         self.input_set = input_set
         self._exception = Exception()
@@ -69,7 +69,9 @@ class ResponseStateFuture:
         self.storage_path = storage_path
         self.output_bucket = "output-bucky"
         self.statemachine_arn=statemachine_arn
-        self.output_path = output_path
+        if output_path_list == None:
+            self.output_path = output_path
+        else: self.output_path = output_path_list
 
     def _set_state(self, new_state):
         ## FIXME add state machine
@@ -78,6 +80,8 @@ class ResponseStateFuture:
         self.statemachine_arn = stateMachine
     def _get_sm_arn():
         return self.statemachine_arn
+    def _get_output_pth(self):
+        return self.output_path
 
     def cancel(self, storage_handler=None):
         # TODO Figure out a better way for this function to have
@@ -120,9 +124,18 @@ class ResponseStateFuture:
         print(undone)
         print(len(undone))
         if(len(succ)>0 and len(fail)<1):
+            print("Suppose to be here????????????")
+            print(self.output_path)
             output = self.storage.get_state_output(self.output_path)
-        else: output = stepFunc.buildStateChecker(self.statemachine_arn)
+        else:
+            print("ORRRRRRRRRRR here????????????") 
+            output = stepFunc.buildStateChecker(self.statemachine_arn)
         return output
+    def wait_state(self):
+        stepFunc = stepFunctionbuilder.StateFunctionWrapper()
+        succ,fail,undone = stepFunc.wait(self.statemachine_arn,self.input_set,stepFunc.ALL_COMPLETED)
+        
+        return "Complete"
         
 
 

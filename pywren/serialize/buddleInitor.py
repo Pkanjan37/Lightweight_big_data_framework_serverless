@@ -138,7 +138,7 @@ def make_archiveWarp(nameN,source, destination):
         shutil.make_archive(name, format, archive_from)
         shutil.move('%s.%s'%(name,format), destination)
 
-def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
+def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_reducer):
     # print("default_preinstall <<<<<<<<<<<")
     # print(default_preinstalls.modules)   
     funcName = funcN
@@ -159,7 +159,9 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     storage_conf = storage_instance.get_storage_config_wrapped()
     # print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
     # print(storage_conf)
-    input_bucket = storage_conf['bucket']
+    if is_reducer == False:
+        input_bucket = storage_conf['bucket']
+    else: input_bucket = storage_conf['bucket_output']
     output_bucket = storage_conf['bucket_output']
     for x in f:
         if "import" in x:
@@ -243,9 +245,22 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     w.write("       with Timeout(840):\n")    
     w.write("           s3 = boto3.client('s3')\n")
     w.write("           bucket_in= '"+input_bucket+"'\n")
-    w.write("           plusfile = event['input']\n")
-    w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
-    w.write("           input_data = r['Body'].read().decode()\n")
+    if is_reducer == False:
+        w.write("           plusfile = event['input']\n")
+        w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
+        w.write("           input_data = r['Body'].read().decode()\n")
+    else:
+        w.write("           pathlist = event['input']\n")
+        w.write("           outputPth = event['output_pth']\n")
+        w.write("           input_data = []\n")
+        w.write("           for i in pathlist:\n")
+        w.write("               r = s3.get_object(Bucket=bucket_in, Key=i)\n")
+        w.write("               input_raw = r['Body'].read().decode()\n")
+        w.write("               input_raw = json.loads(input_raw)\n")
+        w.write("               input_raw = jsonpickle.decode(input_raw['output'])\n")
+        w.write("               input_data.append(input_raw)\n")
+
+        
     w.write("           if 'call_id' in input_data:\n")
     # w.write("           input_data = \n")
     w.write("               input_data = json.loads(input_data)\n")
@@ -259,13 +274,16 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     w.write("               compute = {'output':compute}\n")
     w.write("               compute = json.dumps(compute)\n")
     w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
-    w.write("           else:\n")
+    w.write("           else:\n")                     
     w.write("               compute = "+funcName+"(input_data)\n")
     w.write("               bucket_out= '"+output_bucket+"'\n")
     w.write("               compute = jsonpickle.encode(compute)\n")
     w.write("               compute = {'output':compute}\n")
     w.write("               compute = json.dumps(compute)\n")
-    w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
+    if is_reducer == False:
+        w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
+    else:
+        w.write("               s3.put_object(Bucket=bucket_out, Key=outputPth, Body=compute)\n")
     w.write("           return {\n")
     w.write("               'statusCode': 200,\n")
     w.write("           }\n")
@@ -285,7 +303,7 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj):
     w.write("       raise  TimeoutError('Execution time exceed the limit')\n")
     
 
-def zipper(directory,path,func,conf,storage_instance,funcObj):
+def zipper(directory,path,func,conf,storage_instance,funcObj,is_reducer):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # print(dir_path)
@@ -344,7 +362,7 @@ def zipper(directory,path,func,conf,storage_instance,funcObj):
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()
-        sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj)
+        sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj,is_reducer)
         # raise Exception("eiei")
         # raise Exception("eiei")
         zipfile2(func,pathTmp,dir_path)

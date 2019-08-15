@@ -136,8 +136,10 @@ class StateFunctionWrapper(object):
     def input_path_builder(self,index):
         return "$.input["+str(index)+"]"
 
-    def contruct_statemachine_input(self,inputExecutor,call_id):
-        data={"input":inputExecutor,"call_id":call_id}
+    def contruct_statemachine_input(self,inputExecutor,call_id,outpurPth=None):
+        if outpurPth == None:
+            data={"input":inputExecutor,"call_id":call_id}
+        else: data={"input":inputExecutor,"call_id":call_id,"output_pth":outpurPth}
         return json.dumps(data)
 
     def stateBuildeer(self,func,instance_input):

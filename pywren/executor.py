@@ -165,8 +165,8 @@ class Executor(object):
         return fut
 
     def call_async(self, func, data, extra_env=None,
-                   extra_meta=None,instance_specify=None):
-        return self.map(func, [data], extra_env, extra_meta,instance_specify=instance_specify)
+                   extra_meta=None,instance_specify=None,s3_file_url=False,is_reducer=False):
+        return self.map(func, data, extra_env, extra_meta,instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=is_reducer)
 
     @staticmethod
     def agg_data(data_strs):
@@ -180,7 +180,7 @@ class Executor(object):
 
     def map(self, func, iterdata, extra_env=None, extra_meta=None,
             use_cached_runtime=True, overwrite_invoke_args=None,
-            exclude_modules=None,instance_specify=None,s3_file_url=False):
+            exclude_modules=None,instance_specify=None,s3_file_url=False,is_reducer=False):
         """
         :param func: the function to map over the data
         :param iterdata: An iterable of input data
@@ -219,7 +219,9 @@ class Executor(object):
         # print("execute1.2 <<<<<<<<")
         
         # print("execute1 <<<<<<<<")
+        
         data = list(iterdata)
+        
         # print(data)
         # raise Exception("Eieieieie")
         self.input_list = data
@@ -241,21 +243,40 @@ class Executor(object):
                 else: raise Exception(" The size of input for each worker is exceeded maximum ")
             
         else : instance_input = instance_specify
+        print("REducer data<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        print(data)
         if s3_file_url == True:
             storage_conf = self.storage.get_storage_config_wrapped()
-            input_bucket = storage_conf['bucket']
+            if(is_reducer==False):
+                input_bucket = storage_conf['bucket']
+            else:
+                input_bucket = storage_conf['bucket_output']
             botoS3 = boto3.client('s3')
+            print("Bucket::::::::::::::::::;;")
+            print(input_bucket)
             for i in data:
-                print(i)
-                result = botoS3.list_objects_v2(Bucket=input_bucket, Prefix=i)
-                print(result['Contents'][0]['Size'])
-                if result['Contents'][0]['Size'] <= 35000000:
-                    instance_input = "small" 
-                elif result['Contents'][0]['Size'] < 400000000 and result['Contents'][0]['Size']>35000000 and instance_input=="small":
-                    instance_input = "medium"
-                elif result['Contents'][0]['Size']< 1000000000 and result['Contents'][0]['Size']> 400000000 and (instance_input=="small" or instance_input == "medium"):
-                    instance_input = "large"
-                else: raise Exception(" The size of input for each worker is exceeded maximum ")
+                if isinstance(i,list):
+                    for x in i:
+                        result = botoS3.list_objects_v2(Bucket=input_bucket, Prefix=x)
+                        print(result['Contents'][0]['Size'])
+                        if result['Contents'][0]['Size'] <= 35000000:
+                            instance_input = "small" 
+                        elif result['Contents'][0]['Size'] < 400000000 and result['Contents'][0]['Size']>35000000 and instance_input=="small":
+                            instance_input = "medium"
+                        elif result['Contents'][0]['Size']< 1000000000 and result['Contents'][0]['Size']> 400000000 and (instance_input=="small" or instance_input == "medium"):
+                            instance_input = "large"
+                        else: raise Exception(" The size of input for each worker is exceeded maximum ")
+
+                else:
+                    result = botoS3.list_objects_v2(Bucket=input_bucket, Prefix=i)
+                    print(result['Contents'][0]['Size'])
+                    if result['Contents'][0]['Size'] <= 35000000:
+                        instance_input = "small" 
+                    elif result['Contents'][0]['Size'] < 400000000 and result['Contents'][0]['Size']>35000000 and instance_input=="small":
+                        instance_input = "medium"
+                    elif result['Contents'][0]['Size']< 1000000000 and result['Contents'][0]['Size']> 400000000 and (instance_input=="small" or instance_input == "medium"):
+                        instance_input = "large"
+                    else: raise Exception(" The size of input for each worker is exceeded maximum ")
                 # print("end round<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
             # print("Bucketttttttt<<<<<<<<<<<<")
             # print(input_bucket)
@@ -321,7 +342,7 @@ class Executor(object):
         print("execute5 <<<<<<<<")
         print(mod_paths)
         print("execute5 <<<<<<<<")
-        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func)
+        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func,is_reducer)
         # print("execute5 <<<<<<<<")
         ### Create func and upload
         # func_module_str = pickle.dumps({'func' : func_str,
@@ -337,6 +358,9 @@ class Executor(object):
         N = len(data)
         # call_result_objs = []
         input_path_list=[]
+        if is_reducer == True:
+            output_path_list=[]
+        else: output_path_list = None
         stepFunc = stepFunctionbuilder.StateFunctionWrapper()
         stateMachineName = func.__name__+"-"+str(time.time())
         # create state machine
@@ -374,6 +398,9 @@ class Executor(object):
             else:
                 call_id = "{:05d}".format(i)
                 input_path_list.append(data[i])
+                call_id = "{:05d}".format(i)
+                path = self.storage.predefine_put_data(call_id,timeStampId,func.__name__)
+                output_path_list.append(path)
             
             # cb = pool.apply_async(invoke, (data_strs[i], callset_id,
             #                                call_id, func_key,
@@ -386,13 +413,23 @@ class Executor(object):
             # call_result_objs.append(cb)
         input_list=[]
         # invoke
+        outputCnt=0
         for index in input_path_list:
-            inputS = stepFunc.contruct_statemachine_input(index,call_id)
+            if is_reducer == True:
+                inputS = stepFunc.contruct_statemachine_input(index,call_id,output_path_list[outputCnt])
+            else: inputS = stepFunc.contruct_statemachine_input(index,call_id)
             input_list.append(index)
             arn = stepFunc.create_execution(stateMachine,inputS)
+            outputCnt = outputCnt +1
         
-        futureState = ResponseStateFuture(data, self.storage_path,stateMachine,self.storage,input_list)
-        self.output_path = input_list
+        futureState = ResponseStateFuture(data, self.storage_path,stateMachine,self.storage,input_list,output_path_list)
+        if is_reducer == False:
+            self.output_path = input_list
+        else: self.output_path = output_path_list
+        print("Input List here<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,: ")
+        print(input_list)
+        print("Output List here<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,: ")
+        print(output_path_list)
         # res = [c.get() for c in call_result_objs]
         # pool.close()
         # pool.join()
@@ -430,7 +467,7 @@ class Executor(object):
         return self.call_async(reduce_func, list_of_futures,
                                extra_env=extra_env, extra_meta=extra_meta)
     def reducer(self, function, list_of_futures,
-               extra_env=None, extra_meta=None,instance_specify=None):
+               extra_env=None, extra_meta=None,instance_specify=None,s3_file_url=True,numberOfWorker=1):
         """
         Apply a function across all futures.
 
@@ -441,10 +478,23 @@ class Executor(object):
         # avoid race condition
         # new_input = []
         # new_input.append(list_of_futures.result_state())
+        def chunk(seq, num):
+            avg = len(seq) / float(num)
+            out = []
+            last = 0.0
+
+            while last < len(seq):
+                out.append(seq[int(last):int(last + avg)])
+                last += avg
+
+            return out
+        print(list_of_futures._get_output_pth())
+        reduce_input = chunk(list_of_futures._get_output_pth(),numberOfWorker)
+        list_of_futures.wait_state()
 
 
-        return self.call_async(function, list_of_futures.result_state(),
-                               extra_env=extra_env, extra_meta=extra_meta, instance_specify=instance_specify)
+        return self.call_async(function, reduce_input,
+                               extra_env=extra_env, extra_meta=extra_meta, instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=True)
 
     def get_logs(self, future, verbose=True):
 
