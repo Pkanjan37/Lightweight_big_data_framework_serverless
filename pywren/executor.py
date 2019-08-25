@@ -41,8 +41,12 @@ from pywren.storage.storage_utils import create_func_key
 from pywren.wait import wait, ALL_COMPLETED
 import jsonpickle
 import sys
+import math
+import os
 logger = logging.getLogger(__name__)
-
+from collections import namedtuple
+from itertools import combinations
+from operator import itemgetter
 
 """
 Theoretically will allow for cross-AZ invocations
@@ -165,8 +169,8 @@ class Executor(object):
         return fut
 
     def call_async(self, func, data, extra_env=None,
-                   extra_meta=None,instance_specify=None,s3_file_url=False,is_reducer=False):
-        return self.map(func, data, extra_env, extra_meta,instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=is_reducer)
+                   extra_meta=None,instance_specify=None,s3_file_url=False,is_reducer=False,is_shuffle=False,intermediate_bucket=None):
+        return self.map(func, data, extra_env, extra_meta,instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=is_reducer,is_shuffle=is_shuffle,intermediate_bucket=intermediate_bucket)
 
     @staticmethod
     def agg_data(data_strs):
@@ -180,7 +184,8 @@ class Executor(object):
 
     def map(self, func, iterdata, extra_env=None, extra_meta=None,
             use_cached_runtime=True, overwrite_invoke_args=None,
-            exclude_modules=None,instance_specify=None,s3_file_url=False,is_reducer=False):
+            exclude_modules=None,instance_specify=None,s3_file_url=False
+            ,is_reducer=False,is_shuffle=False,is_url_list=False,intermediate_bucket=None):
         """
         :param func: the function to map over the data
         :param iterdata: An iterable of input data
@@ -243,9 +248,9 @@ class Executor(object):
                 else: raise Exception(" The size of input for each worker is exceeded maximum ")
             
         else : instance_input = instance_specify
-        print("REducer data<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        print(data)
-        if s3_file_url == True:
+        # print("REducer data<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        # print(data)
+        if s3_file_url == True and is_shuffle==False and instance_specify == None:
             storage_conf = self.storage.get_storage_config_wrapped()
             if(is_reducer==False):
                 input_bucket = storage_conf['bucket']
@@ -342,7 +347,7 @@ class Executor(object):
         print("execute5 <<<<<<<<")
         print(mod_paths)
         print("execute5 <<<<<<<<")
-        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func,is_reducer)
+        buddleInitor.zipper(mod_paths,os.path.abspath(inspect.stack()[-1][1]),func.__name__,self.config,self.storage,func,is_reducer,is_shuffle,is_url_list,intermediate_bucket)
         # print("execute5 <<<<<<<<")
         ### Create func and upload
         # func_module_str = pickle.dumps({'func' : func_str,
@@ -365,7 +370,7 @@ class Executor(object):
         stateMachineName = func.__name__+"-"+str(time.time())
         # create state machine
         state = stepFunc.stateBuildeer(func.__name__,instance_input)
-        print("state machine definition :<<<<<<<<<<<<<<<<<<<"+state)
+        # print("state machine definition :<<<<<<<<<<<<<<<<<<<"+state)
         # raise Exception("eiei")
         stepFuncRole = "arn:aws:iam::{}:role/{}".format(self.config['account']['aws_account_id'], self.config['account']['aws_sfn_role'])
 
@@ -398,9 +403,9 @@ class Executor(object):
             else:
                 call_id = "{:05d}".format(i)
                 input_path_list.append(data[i])
-                call_id = "{:05d}".format(i)
                 path = self.storage.predefine_put_data(call_id,timeStampId,func.__name__)
-                output_path_list.append(path)
+                if output_path_list != None:
+                    output_path_list.append(path)
             
             # cb = pool.apply_async(invoke, (data_strs[i], callset_id,
             #                                call_id, func_key,
@@ -422,7 +427,7 @@ class Executor(object):
             arn = stepFunc.create_execution(stateMachine,inputS)
             outputCnt = outputCnt +1
         
-        futureState = ResponseStateFuture(data, self.storage_path,stateMachine,self.storage,input_list,output_path_list)
+        futureState = ResponseStateFuture(data, self.storage_path,stateMachine,self.storage,input_list,intermediate_bucket,output_path_list)
         if is_reducer == False:
             self.output_path = input_list
         else: self.output_path = output_path_list
@@ -438,6 +443,8 @@ class Executor(object):
         # FIXME take advantage of the callset to return a lot of these
 
         # note these are just the invocation futures
+        print("Future state <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,")
+        print(futureState)
 
         return futureState
 
@@ -467,7 +474,7 @@ class Executor(object):
         return self.call_async(reduce_func, list_of_futures,
                                extra_env=extra_env, extra_meta=extra_meta)
     def reducer(self, function, list_of_futures,
-               extra_env=None, extra_meta=None,instance_specify=None,s3_file_url=True,numberOfWorker=1):
+               extra_env=None, extra_meta=None,instance_specify=None,s3_file_url=True,maximumNumberOfWorker=1,is_shuffle=False):
         """
         Apply a function across all futures.
 
@@ -478,7 +485,179 @@ class Executor(object):
         # avoid race condition
         # new_input = []
         # new_input.append(list_of_futures.result_state())
+        def findInPair(pairs,eleToRM):
+            rmEle = ''
+            for i in pairs:
+                if i.first == eleToRM:
+                    rmEle=i
+            return rmEle
+        def Shuffle(inputList,NrWorker,bucket):
+            s3obj = boto3.client("s3")
+            sumSize=0
+            setURLFolder = {}
+            repoList = set([])
+            storage_conf = self.storage.get_storage_config_wrapped()
+            input_bucket = storage_conf['bucket_output']
+            Pair = namedtuple("Pair", ["first", "second"])
+            pairs = []
+            for x in inputList:
+                if isinstance(x,list):
+                    x = x[len(x)-1]
+                    # print("Is x correct?????<<<<<<<<<")
+                    # print(x)
+                r = s3obj.get_object(Bucket=input_bucket, Key=x)
+                data = r['Body'].read()
+                input_data = json.loads(data)
+                input_data = jsonpickle.decode(input_data['output'])
+                # print(input_data)
+                
+                for j in input_data:
+                    split = j.split('/')
+                    print(split[0])
+                    rootFolder = split[0]+"/"+split[1]+"/"
+                    repoList.add(rootFolder)
+                # repoList.add('FilterNaja2-2688/4')
+        
+                # print(repoList)
+                # print("RepoList <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+                # print(repoList)
+                for k in repoList:
+                    # print(k)    
+                    result = s3obj.list_objects_v2(Bucket=bucket, Prefix=k)
+                    for i in result['Contents']:
+                        
+                        # pairs = [Pair("a", 1), Pair("b", 2), Pair("c", 3)]
+                        sumSize=sumSize+i['Size']
+
+                    a = Pair(k,sumSize)
+                    pairs.append(a)
+                    sumSize = 0
+            print(pairs)
+            output=[]
+            usedElement=[]
+            # Pair = namedtuple("Pair", ["first", "second"])
+            # pairs = [Pair(first='FilterNaja2-2688/0', second=2730702), Pair(first='FilterNaja2-2688/2', second=13213392), Pair(first='FilterNaja2-2688/1', second=3506321), Pair(first='FilterNaja2-2688/3', second=12707322), Pair(first='FilterNaja2-2688/6', second=152), Pair(first='FilterNaja2-2688/4', second=10811566), Pair(first='FilterNaja2-2688/5', second=1795518)]
+            originalSize = len(pairs)
+            print("Die Here 1<<<<<<<<<<")
+            sizeList=[]
+            urlList=[]
+            for pair in pairs:
+                urlList.append(pair.first)
+                sizeList.append(pair.second)
+            print("Die Here 2<<<<<<<<<<")
+            # sizeList = [2730702, 13213392, 3506321,12707322,152,10811566,1795518]
+            # print(sizeList)
+            ratio = sum(sizeList)/NrWorker
+            if ratio > 1000000000:
+                raise  Exception(" The size of input for reducer worker is exceeded maximum ")
+            # print(ratio)
+            print("Die Here 3<<<<<<<<<<")
+            for popFirst in pairs:
+                if popFirst.second > ratio:
+                    # print(popFirst)
+                    output.append([popFirst.first])
+                    pairs.remove(popFirst)
+                    usedElement.append(popFirst.first)
+            # print(output)
+            # print(pairs)
+            print("Die Here 4<<<<<<<<<<")
+            k=2
+            for pair in pairs:
+                print("Die Here 5<<<<<<<<<<")
+                listSumCombi=[]
+                PossibleCombi=[]
+                for item in combinations(pairs, k):
+                    print("Die Here 6<<<<<<<<<<")
+                    if k > originalSize-len(usedElement):
+                        # print(k)
+                        print("TBD")
+
+                    sumCombi =0
+                    listCombiEle=[]
+                    
+                    for case in item:
+                        print("Die Here 7<<<<<<<<<<")
+                        sumCombi = sumCombi+case.second
+                        listCombiEle.append(case.first)
+                
+                    listSumCombi.append(sumCombi)
+                    combi = Pair(listCombiEle,sumCombi)
+                    PossibleCombi.append(combi)
+        
+                if (len(pairs)/k) <= k :
+                    currIdx=0
+                    for ele in PossibleCombi:
+                        print("Die Here 8<<<<<<<<<<")
+                        print(ele.first)
+                        isUsed=False
+                        for checkUsed in ele.first:
+                            if checkUsed in usedElement:
+                                isUsed=True
+                        if isUsed==False:
+                            for addUsed in ele.first:
+                                print("Die Here 9<<<<<<<<<<")
+                                usedElement.append(addUsed)
+                                toRm = findInPair(pairs,addUsed)
+                                if toRm != '':
+                                    pairs.remove(toRm)
+                            output.append(ele.first)
+                            PossibleCombi.remove(ele)
+                            # print("Cur <<<<<<<<<")
+                            # print(currIdx)
+                            # print(listSumCombi)
+                            # print("Cur <<<<<<<<<")
+                            listSumCombi.pop(currIdx)
+                            # pairs.remove(Pair(first=ele.first,second=ele.second))
+                        currIdx = currIdx +1
+                    
+                if NrWorker-len(output) > originalSize- len(usedElement):
+                    for leftEle in pairs:
+                        print("Die Here 10<<<<<<<<<<")
+                        isIn=False
+                        for alreadyIn in usedElement:
+                            if leftEle.first==usedElement:
+                                isIn=True
+                        if isIn==False:
+                            usedElement.append(leftEle.first)
+                            output.append([leftEle.first])
+                            toRm = findInPair(pairs,leftEle.first)
+                            if toRm != '':
+                                pairs.remove(toRm)
+                if originalSize-len(output)<=1:
+                    output.append(list(set(urlList) - set(usedElement)))
+
+                for idx in range(0,len(listSumCombi)):
+                    print("Die Here 11<<<<<<<<<<")
+                    if listSumCombi[idx] > ratio:
+                        
+                        toAdd = PossibleCombi[idx]
+                        print(toAdd)
+                        isUsed=False
+                        for checkUsed in toAdd.first:
+                            print("Used ::::")
+                            print(usedElement)
+                            print(output)
+                            if checkUsed in usedElement:
+                                isUsed=True
+                        if isUsed==False:
+                            for addUsed in toAdd.first:
+                                usedElement.append(addUsed)
+                                toRm = findInPair(pairs,addUsed)
+                                if toRm != '':
+                                    pairs.remove(toRm)
+                            output.append(toAdd.first)
+                            # PossibleCombi.remove(PossibleCombi[idx])
+                            # listSumCombi.pop(idx)
+                    
+                if len(usedElement) == len(pairs):
+                    break
+                # break
+                k = k+1
+            # print("Output")
+            # print(output)
+            return output
         def chunk(seq, num):
+            
             avg = len(seq) / float(num)
             out = []
             last = 0.0
@@ -488,13 +667,59 @@ class Executor(object):
                 last += avg
 
             return out
+        def LightBalance(inputList,num,bucket):
+            s3obj = boto3.client("s3")
+            setURLFolder = {}
+            repoList = set([])
+            storage_conf = self.storage.get_storage_config_wrapped()
+            input_bucket = storage_conf['bucket_output']
+   
+            for x in inputList:
+                if isinstance(x,list):
+                    x = x[len(x)-1]
+                    # print("Is x correct?????<<<<<<<<<")
+                    # print(x)
+                r = s3obj.get_object(Bucket=input_bucket, Key=x)
+                data = r['Body'].read()
+                input_data = json.loads(data)
+                input_data = jsonpickle.decode(input_data['output'])
+                # print(input_data)
+                
+                for j in input_data:
+                    split = j.split('/')
+                    print(split[0])
+                    rootFolder = split[0]+"/"+split[1]+"/"
+                    repoList.add(rootFolder)
+            if num> len(repoList):
+                num = len(repoList)
+            print("Repo list light balance:::::::::::::::::::::")
+            print(repoList)
+            repoList = list(repoList)
+            avg = len(repoList) / float(num)
+            out = []
+            last = 0.0
+
+            while last < len(repoList):
+                out.append(repoList[int(last):int(last + avg)])
+                last += avg
+
+            return out
+
         print(list_of_futures._get_output_pth())
-        reduce_input = chunk(list_of_futures._get_output_pth(),numberOfWorker)
         list_of_futures.wait_state()
+        # FIX List input
+        if is_shuffle == True:
+            reduce_input = LightBalance(list_of_futures._get_output_pth(),maximumNumberOfWorker,list_of_futures._get_intermediate_bucket())
+            print("input nowwwwwwwwwwwww<<<<<<<<<<<<<<<<<,")
+            print(reduce_input)
+        else : reduce_input = chunk(list_of_futures._get_output_pth(),maximumNumberOfWorker)
+        print("Reducer input:::::::::::::::")
+        print(reduce_input)
+        
 
 
         return self.call_async(function, reduce_input,
-                               extra_env=extra_env, extra_meta=extra_meta, instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=True)
+                               extra_env=extra_env, extra_meta=extra_meta, instance_specify=instance_specify,s3_file_url=s3_file_url,is_reducer=True,is_shuffle=is_shuffle,intermediate_bucket=list_of_futures._get_intermediate_bucket())
 
     def get_logs(self, future, verbose=True):
 

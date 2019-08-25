@@ -144,22 +144,29 @@ class Storage(object):
         except StorageNoSuchKeyError:
             raise StorageOutputNotFoundError(callset_id, call_id)
     
-    def get_state_output(self,path):
+    def get_state_output(self,path,Mode="ALL"):
         # return list of output
         # loop call for all output
         output=[]
         try:
             for p in path:
-                result = self.backend_handler.get_output(p)
-                datastore = json.loads(result)
+                if Mode=="ALL":
+                    result = self.backend_handler.get_output(p)
+                    datastore = json.loads(result)
+                    final_result = jsonpickle.decode(datastore['output'])
+                    output.append(final_result)
+                else: 
+                    result = self.backend_handler.get_output_away(p)
+                    if result != None:
+                        datastore = json.loads(result)
                 # print("Get output <<<<<<<<<<<<<<<<<<<<<<<<")
                 # print(result)
                 # print("Get output2 <<<<<<<<<<<<<<<<<<<<<<<<")
                 # print(datastore)
-                final_result = jsonpickle.decode(datastore['output'])
+                        final_result = jsonpickle.decode(datastore['output'])
                 # print("Get output3 <<<<<<<<<<<<<<<<<<<<<<<<")
                 # print(final_result)
-                output.append(final_result)
+                        output.append(final_result)
                 # print("Get output4 <<<<<<<<<<<<<<<<<<<<<<<<")
                 # print(output)
         except Exception as e:

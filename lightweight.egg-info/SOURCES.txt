@@ -12,6 +12,7 @@ pywren/default_config.yaml
 pywren/ec2standalone.py
 pywren/executor.py
 pywren/future.py
+pywren/getDataAllObjectS3.py
 pywren/invokers.py
 pywren/local.py
 pywren/queues.py

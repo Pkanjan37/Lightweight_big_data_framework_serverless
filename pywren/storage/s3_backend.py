@@ -80,7 +80,25 @@ class S3Backend(object):
             if e.response['Error']['Code'] == "NoSuchKey":
                 raise StorageNoSuchKeyError(key)
             else:
-                raise e
+                raise 
+    def get_output_away(self, key):
+        """
+        Get object from S3 with a key. Throws StorageNoSuchKeyError if the given key does not exist.
+        :param key: key of the object
+        :return: Data of the object
+        :rtype: str/bytes
+        """
+        try:
+            r = self.s3client.get_object(Bucket=self.s3_output_bucket, Key=key)
+            data = r['Body'].read().decode("utf-8")
+            return data
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "NoSuchKey":
+                print("Output not proceed")
+                return None
+            else:
+                print("Unknown reason {1}".format(e))
+                return None
 
     def key_exists(self, key):
         """

@@ -52,7 +52,7 @@ class ResponseStateFuture:
     execution and the result when available.
     """
     GET_RESULT_SLEEP_SECS = 4
-    def __init__(self, input_set, storage_path,statemachine_arn,storage_instance,output_path,output_path_list=None):
+    def __init__(self, input_set, storage_path,statemachine_arn,storage_instance,output_path,intermediate_bucket=None,output_path_list=None):
 
         self.input_set = input_set
         self._exception = Exception()
@@ -68,6 +68,7 @@ class ResponseStateFuture:
 
         self.storage_path = storage_path
         self.output_bucket = "output-bucky"
+        self.intermediate_bucket = intermediate_bucket
         self.statemachine_arn=statemachine_arn
         if output_path_list == None:
             self.output_path = output_path
@@ -82,6 +83,8 @@ class ResponseStateFuture:
         return self.statemachine_arn
     def _get_output_pth(self):
         return self.output_path
+    def _get_intermediate_bucket(self):
+        return self.intermediate_bucket
 
     def cancel(self, storage_handler=None):
         # TODO Figure out a better way for this function to have
@@ -111,7 +114,7 @@ class ResponseStateFuture:
     def errored(self):
         return self._state == JobState.error
 
-    def result_state(self):
+    def result_state(self,Mode="ALL"):
         stepFunc = stepFunctionbuilder.StateFunctionWrapper()
         succ,fail,undone = stepFunc.wait(self.statemachine_arn,self.input_set,stepFunc.ALL_COMPLETED)
         print("State succ<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
@@ -123,13 +126,22 @@ class ResponseStateFuture:
         print("State undone<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         print(undone)
         print(len(undone))
-        if(len(succ)>0 and len(fail)<1):
-            print("Suppose to be here????????????")
-            print(self.output_path)
-            output = self.storage.get_state_output(self.output_path)
-        else:
-            print("ORRRRRRRRRRR here????????????") 
-            output = stepFunc.buildStateChecker(self.statemachine_arn)
+        if Mode=="ALL":     
+            if(len(succ)>0 and len(fail)<1):
+                print("Suppose to be here????????????")
+                print(self.output_path)
+                output = self.storage.get_state_output(self.output_path,Mode)
+            else:
+                print("ORRRRRRRRRRR here????????????") 
+                output = stepFunc.buildStateChecker(self.statemachine_arn)
+        else: 
+            if(len(succ)>0):
+                print("Suppose to be here????????????")
+                print(self.output_path)
+                output = self.storage.get_state_output(self.output_path,Mode)
+            else:
+                print("ORRRRRRRRRRR here????????????") 
+                output = stepFunc.buildStateChecker(self.statemachine_arn)
         return output
     def wait_state(self):
         stepFunc = stepFunctionbuilder.StateFunctionWrapper()

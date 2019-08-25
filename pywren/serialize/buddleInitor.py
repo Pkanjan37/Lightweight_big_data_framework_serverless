@@ -138,9 +138,11 @@ def make_archiveWarp(nameN,source, destination):
         shutil.make_archive(name, format, archive_from)
         shutil.move('%s.%s'%(name,format), destination)
 
-def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_reducer):
+def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_reducer,is_shuffle,is_url_list,directory,intermediate_bucket):
     # print("default_preinstall <<<<<<<<<<<")
-    # print(default_preinstalls.modules)   
+    # print(default_preinstalls.modules)
+    print("Shuffle or not????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")   
+    print(is_shuffle)
     funcName = funcN
     fileName = funcName+".py"
     lines = inspect.getsource(funcObj)
@@ -155,6 +157,8 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
     w.write("import jsonpickle\n")
     w.write("import time\n")
     w.write("import signal\n")
+    w.write("import math\n")
+    w.write("import os\n")
     # w.write("import jsonpickle\n")
     storage_conf = storage_instance.get_storage_config_wrapped()
     # print("Configure storage <<<<<<<<<<<<<<<<<<<<<<<<")
@@ -162,11 +166,15 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
     if is_reducer == False:
         input_bucket = storage_conf['bucket']
     else: input_bucket = storage_conf['bucket_output']
+    if is_reducer ==True and is_shuffle == True and intermediate_bucket==None:
+        
+        intermediate_bucket = storage_conf['bucket_output']
     output_bucket = storage_conf['bucket_output']
     for x in f:
         if "import" in x:
             if "pywren" in x:
                 print(x+" not inculde pywren")
+            
             else:
                 moduleOnly = ""
                 # Inculde only module that importable
@@ -197,7 +205,12 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
                     if k == moduleOnly:
                         # print("0")
                         # print(x)
-                            w.write(x)
+                        if moduleOnly == "pandas":
+                            for path in directory:
+                                if "pandas" in path:
+                                    w.write(x)
+
+                        else:    w.write(x)
                     # else: 
                     #     print("Idiot") 
                     #     print(x)
@@ -217,7 +230,11 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
                             # print(x)
                             # print("0.5")
                             # print(x)
-                                w.write(x)
+                            if moduleOnly == "pandas":
+                                for path in directory:
+                                    if "pandas" in path:
+                                        w.write(x)
+                            else:    w.write(x)
                 # print("0")
                 # print(x)
                 # w.write(x)
@@ -240,25 +257,67 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
         # elif indent==True:
         #     indent = False
     w.write(lines)
+    if intermediate_bucket != None and is_reducer == False:
+        w.write("def ShufflerFunc(inputList):\n")
+        w.write("   s3obj = boto3.client('s3')\n")
+        w.write("   listUrlResult = set([])\n")
+        w.write("   for i in inputList:\n")
+        w.write("       if len(i)==2:\n")
+        w.write("           key = '{0}/{1}/{2}.csv'.format(os.environ['AWS_LAMBDA_FUNCTION_NAME'],i[0],time.time())\n")
+        w.write("           s3obj.put_object(Bucket='"+intermediate_bucket+"', Key=key, Body=i)\n")
+        w.write("       else: \n")
+        w.write("           key = '{0}/{1}/{2}/{3}.csv'.format(os.environ['AWS_LAMBDA_FUNCTION_NAME'],i[0],i[2],time.time())\n")
+        w.write("           listUrlResult.add(key)\n")
+        w.write("           s3obj.put_object(Bucket='"+intermediate_bucket+"', Key=key, Body=i[1])\n")
+        w.write("   return listUrlResult\n")
+
     w.write("def lambda_handler(event, context):\n")
     w.write("   try:\n")
     w.write("       with Timeout(840):\n")    
     w.write("           s3 = boto3.client('s3')\n")
     w.write("           bucket_in= '"+input_bucket+"'\n")
     if is_reducer == False:
-        w.write("           plusfile = event['input']\n")
-        w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
-        w.write("           input_data = r['Body'].read().decode()\n")
+        if is_url_list == False:
+            w.write("           plusfile = event['input']\n")
+            w.write("           r = s3.get_object(Bucket=bucket_in, Key=plusfile)\n")
+            w.write("           input_data = r['Body'].read().decode()\n")
+        else : 
+            w.write("           plusfile = event['input']\n")
+            w.write("           input_data=[]\n")
+            w.write("           for url in plusfile:\n")
+            w.write("               r = s3.get_object(Bucket=bucket_in, Key=url)\n")
+            w.write("               inputEach = r['Body'].read().decode()\n")
+            w.write("               input_data.append(inputEach)\n")
+            w.write("               plusfile = url\n")
+        #  and is_shuffle==False
     else:
         w.write("           pathlist = event['input']\n")
         w.write("           outputPth = event['output_pth']\n")
         w.write("           input_data = []\n")
+        w.write("           listObjKey = []\n")
         w.write("           for i in pathlist:\n")
-        w.write("               r = s3.get_object(Bucket=bucket_in, Key=i)\n")
+    if is_reducer== True and is_shuffle == False:
+        w.write("               r = s3.get_object(Bucket='"+input_bucket+"', Key=i)\n")
         w.write("               input_raw = r['Body'].read().decode()\n")
         w.write("               input_raw = json.loads(input_raw)\n")
         w.write("               input_raw = jsonpickle.decode(input_raw['output'])\n")
         w.write("               input_data.append(input_raw)\n")
+    elif is_reducer == True and is_shuffle == True :
+        
+        w.write("               result = s3.list_objects_v2(Bucket='"+intermediate_bucket+"', Prefix=i)\n")
+        w.write("               for k in result['Contents']:\n")
+        w.write("                   listObjKey.append(k['Key'])\n")
+        w.write("           for i in listObjKey:\n")
+        w.write("               r = s3.get_object(Bucket='"+intermediate_bucket+"', Key=i)\n")
+        w.write("               input_raw = r['Body'].read().decode()\n")
+        w.write("               x = i.split('/')\n")
+        w.write("               if len(x)<4:\n")
+        w.write("                   input_data.append(input_raw)\n")
+        w.write("               else:\n")
+        w.write("                   input_data.append([x[2],input_raw])\n")
+    # elif is_reducer == True and is_shuffle==True:
+    #     w.write("           outputPth = event['output_pth']\n")
+    #     w.write("           input_data = event['input']\n")
 
         
     w.write("           if 'call_id' in input_data:\n")
@@ -276,6 +335,8 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
     w.write("               s3.put_object(Bucket=bucket_out, Key=plusfile, Body=compute)\n")
     w.write("           else:\n")                     
     w.write("               compute = "+funcName+"(input_data)\n")
+    if intermediate_bucket != None and is_reducer ==False:
+        w.write("               compute = ShufflerFunc(compute)\n")
     w.write("               bucket_out= '"+output_bucket+"'\n")
     w.write("               compute = jsonpickle.encode(compute)\n")
     w.write("               compute = {'output':compute}\n")
@@ -303,7 +364,7 @@ def sourceBuilder(path,funcN,dir_path,storage_instance,allModuleName,funcObj,is_
     w.write("       raise  TimeoutError('Execution time exceed the limit')\n")
     
 
-def zipper(directory,path,func,conf,storage_instance,funcObj,is_reducer):
+def zipper(directory,path,func,conf,storage_instance,funcObj,is_reducer,is_shuffle,is_url_list,intermediate_bucket):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # print(dir_path)
@@ -362,7 +423,7 @@ def zipper(directory,path,func,conf,storage_instance,funcObj,is_reducer):
         # zipf = zipfile.ZipFile(func+'.zip', 'w', zipfile.ZIP_DEFLATED)
         # zipdir(zipPath,zipf)
         # zipf.close()
-        sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj,is_reducer)
+        sourceBuilder(path,func,pathTmp,storage_instance,allModuleName,funcObj,is_reducer,is_shuffle,is_url_list,directory,intermediate_bucket)
         # raise Exception("eiei")
         # raise Exception("eiei")
         zipfile2(func,pathTmp,dir_path)
